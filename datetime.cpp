@@ -280,25 +280,25 @@ std::string strWeekday(const dtm::weekday_t & wday)
 	switch (wday)
 	{
 	case dtm::weekday_t::SUN:
-		weekDay = "Sunday";
+		weekDay = "Domenica";
 		break;
 	case dtm::weekday_t::MON:
-		weekDay = "Monday";
+		weekDay = "Lunedi";
 		break;
 	case dtm::weekday_t::TUE:
-		weekDay = "Tuesday";
+		weekDay = "Martedi";
 		break;
 	case dtm::weekday_t::WED:
-		weekDay = "Wednesday";
+		weekDay = "Mercoledi";
 		break;
 	case dtm::weekday_t::THU:
-		weekDay = "Thursday";
+		weekDay = "Giovedi";
 		break;
 	case dtm::weekday_t::FRI:
-		weekDay = "Friday";
+		weekDay = "Venerdi";
 		break;
 	case dtm::weekday_t::SAT:
-		weekDay = "Saturday";
+		weekDay = "Sabato";
 		break;
 	default:
 		throw std::out_of_range("weekday");
@@ -310,13 +310,13 @@ std::string strWeekday(const dtm::weekday_t & wday)
 
 std::ostream& operator<< (std::ostream& stream, const dtm::date& date)
 {
-	stream << std::setfill('0') << strWeekday(date.weekday()) << " " << std::setw(2) << date.day() << "\\" << std::setw(2) << static_cast<int>(date.month()) << "\\" << date.year();
+	stream << std::setfill('0') << strWeekday(date.weekday()) << " " << std::setw(2) << std::to_string(date.day()) << "\\" << std::setw(2) << std::to_string(static_cast<int>(date.month())) << "\\" << std::to_string(date.year());
 	return stream;
 }
 
 std::ostream& operator<< (std::ostream& stream, const dtm::time& time)
 {
-	stream << std::setfill('0') << std::setw(2) << time.hh() << ":" << std::setw(2) << time.mm() << ":" << std::setw(2) << time.ss();
+	stream << std::setfill('0') << std::setw(2) << std::to_string(time.hh()) << ":" << std::setw(2) << std::to_string(time.mm()) << ":" << std::setw(2) << std::to_string(time.ss());
 	return stream;
 }
 

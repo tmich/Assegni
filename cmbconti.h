@@ -11,7 +11,7 @@ public:
 	~CComboConti();
 
 	void Aggiorna(const Azienda&);
-	ContoCorrente * GetSelectedItem() const;
+	ContoCorrente GetSelectedItem() const;
 private:
 	std::vector<ContoCorrente> m_conti;
 };

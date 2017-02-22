@@ -179,6 +179,7 @@
     <ClInclude Include="datetime.h" />
     <ClInclude Include="dbconn.h" />
     <ClInclude Include="dlgassegni.h" />
+    <ClInclude Include="dlgconto.h" />
     <ClInclude Include="dlgemessi.h" />
     <ClInclude Include="dlgdettassegno.h" />
     <ClInclude Include="dlglibretto.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="ipaddress.h" />
     <ClInclude Include="libdao.h" />
     <ClInclude Include="libretto.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="notfoundex.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="services.h" />
@@ -211,6 +213,7 @@
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="dbconn.cpp" />
     <ClCompile Include="dlgassegni.cpp" />
+    <ClCompile Include="dlgconto.cpp" />
     <ClCompile Include="dlgemessi.cpp" />
     <ClCompile Include="dlgdettassegno.cpp" />
     <ClCompile Include="dlglibretto.cpp" />
@@ -218,6 +221,7 @@
     <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="libdao.cpp" />
     <ClCompile Include="libretto.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="services.cpp" />
     <ClCompile Include="settings.cpp" />
@@ -234,7 +238,10 @@
     <ResourceCompile Include="Assegni.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bank-01-green.ico" />
+    <Image Include="bank-01.ico" />
     <Image Include="bank.ico" />
+    <Image Include="bank.png" />
     <Image Include="booklet.ico" />
     <Image Include="find.ico" />
     <Image Include="lock.ico" />

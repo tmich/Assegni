@@ -15,29 +15,24 @@ void CComboAssegni::Aggiorna(const std::vector<Assegno> assegni)
 	m_assegni.resize(assegni.size());
 	std::copy(assegni.begin(), assegni.end(), m_assegni.begin());
 	ResetContent();
-	int i = 0;
-
-	for (const auto& a : m_assegni)
+	
+	for (size_t i = 0; i < m_assegni.size(); i++)
 	{
-		AddString(a.getNumero().c_str());
-		SetItemData(i++, (DWORD)&a);
+		int x = AddString(m_assegni[i].getNumero().c_str());
+		SetItemData(x, i);
 	}
 	
+	EnableWindow(GetCount() > 0);
+
 	if (GetCount() > 0)
 	{
 		SetCurSel(0);
-		EnableWindow();
 	}
 }
 
-Assegno * CComboAssegni::GetSelectedItem() const
+Assegno CComboAssegni::GetSelectedItem() const
 {
-	if (GetCurSel() >= 0)
-	{
-		return (Assegno*)GetItemData(GetCurSel());
-	}
-	else
-	{
-		return nullptr;
-	}
+	int cursel = GetCurSel();
+	int index = GetItemData(cursel);
+	return m_assegni[index];
 }

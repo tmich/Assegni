@@ -6,6 +6,7 @@
 #include "dlglibretto.h"
 #include "dlgemessi.h"
 #include "dlgsettings.h"
+#include "dlgconto.h"
 #include <wxx_gdi.h>
 #include <mariadb++\exceptions.hpp>
 #include <stdexcept>
@@ -29,12 +30,16 @@ BOOL DlgAssegni::OnInitDialog()
 	AttachItem(IDC_BTNCERCASS, m_btnCercaAssegno);
 	AttachItem(IDC_BTNEMESSI, m_btnEmessi);
 	AttachItem(IDC_IMGLOGO, m_imgLogo);
+	AttachItem(IDC_BTNBANCHE, m_btnBanche);
 
 	//Icona dei pulsanti
 	m_btnNuovoAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_PEN), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnCercaAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_FIND), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnEmessi.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnNuovoLibretto.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BOOKLET), IMAGE_ICON, 48, 48, LR_SHARED)));
+	m_btnBanche.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
+
+	// Logo
 	m_imgLogo.SetBitmap(::LoadBitmap(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDB_LOGO)));
 	return 0;
 }
@@ -48,7 +53,7 @@ BOOL DlgAssegni::OnCommand(WPARAM wParam, LPARAM lParam)
 		auto cref = cnn.connect();
 		cref->disconnect();
 	}
-	catch (const mariadb::exception::connection& cnex)
+	catch (const mariadb::exception::connection&)
 	{
 		OnConnectionException();
 		return false;
@@ -86,6 +91,12 @@ BOOL DlgAssegni::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 		DlgAssegniEmessi dlgEmessi;
 		dlgEmessi.DoModal(*this);
+		break;
+	}
+	case IDC_BTNBANCHE:
+	{
+		DlgConto dlgConto;
+		dlgConto.DoModal(*this);
 		break;
 	}
 	}

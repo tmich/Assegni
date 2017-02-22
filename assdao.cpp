@@ -33,7 +33,7 @@ Assegno AssegnoDao::getById(long id)
 	throw NotFoundException();
 }
 
-std::vector<Assegno> AssegnoDao::getByLibretto(const Libretto & lib)
+std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 {
 	std::vector<Assegno> assegni;
 	mydb::Connection conn;
@@ -41,17 +41,22 @@ std::vector<Assegno> AssegnoDao::getByLibretto(const Libretto & lib)
 	auto con = conn.connect();
 	auto stmt = con->create_statement(R"(SELECT id, id_libretto, numero, data_emissione, data_scadenza,
 		beneficiario, importo, data_incasso, note FROM palmi.assegno where id_libretto = ?)");
-	stmt->set_unsigned32(0, lib.getId());
+	stmt->set_unsigned32(0, idLibretto);
 	auto res = stmt->query();
 
 	while (res->next())
 	{
-		assegni.push_back(fromResultset(res));	
+		assegni.push_back(fromResultset(res));
 	}
 
 	con->disconnect();
 	return assegni;
 }
+
+//std::vector<Assegno> AssegnoDao::getByLibretto(const Libretto & lib)
+//{
+//	return getByLibretto(lib.getId());
+//}
 
 std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az, unsigned int anno, unsigned short mese)
 {

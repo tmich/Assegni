@@ -131,7 +131,7 @@ void DlgLibretto::DatiLibretto()
 	m_cmbAziende.SetSelectedItem(az, true);
 
 	AssegnoDao asdao;
-	std::vector<Assegno> assegni = asdao.getByLibretto(lib);
+	std::vector<Assegno> assegni = asdao.getByLibretto(lib.getId());
 	m_lstAssegni.ResetContent();
 	for (auto const& a : assegni)
 	{
@@ -175,7 +175,8 @@ void DlgLibretto::Errore(const std::wstring & msg)
 
 void DlgLibretto::Salva()
 {
-	long id_conto = m_cmbConti.GetSelectedItem()->getId();
+	ContoCorrente cc = m_cmbConti.GetSelectedItem();
+	long id_conto = cc.getId();
 	std::wstring codLib = m_txtCodice.GetWindowTextW();
 	std::wstring nLib = m_txtLibretto.GetWindowTextW();
 	std::vector<std::wstring> assegni;

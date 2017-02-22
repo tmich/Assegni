@@ -9,7 +9,7 @@ public:
 	~CComboAssegni();
 
 	void Aggiorna(const std::vector<Assegno>);
-	Assegno * GetSelectedItem() const;
+	Assegno GetSelectedItem() const;
 private:
 	//virtual void OnInitialUpdate() override;
 	std::vector<Assegno> m_assegni;

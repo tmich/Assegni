@@ -13,29 +13,21 @@ CComboLibretti::~CComboLibretti()
 
 void CComboLibretti::Aggiorna(const ContoCorrente & cc)
 {
-	m_libretti.clear();
-	LibrettoDao ldao;
-	this->m_libretti = ldao.getByConto(cc);
-	int i = 0;
 	ResetContent();
-	for (const auto& lib : m_libretti)
+	LibrettoDao ldao;
+	m_libretti = ldao.getByConto(cc);
+	for (size_t i = 0; i < m_libretti.size(); i++)
 	{
-		AddString(lib.toString().c_str());
-		this->SetItemData(i++, (DWORD)&lib);
+		int x = AddString(m_libretti[i].toString().c_str());
+		SetItemData(x, i);
 	}
 
-	if (GetCount() > 0)
-	{
-		EnableWindow();
-	}
+	EnableWindow(GetCount() > 0);
 }
 
-Libretto * CComboLibretti::GetSelectedItem() const
+Libretto CComboLibretti::GetSelectedItem() const
 {
 	int cursel = GetCurSel();
-	if (cursel >= 0)
-	{
-		return (Libretto *)GetItemData(cursel);
-	}
-	return nullptr;
+	int index = GetItemData(cursel);
+	return m_libretti[index];
 }

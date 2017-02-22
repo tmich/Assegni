@@ -9,7 +9,9 @@ mydb::Connection::Connection()
 	Settings settings;
 	auto acc_login = mariadb::account::create(settings.GetDbAddress().mb_str().c_str(), 
 		settings.GetDbUser().c_str(), settings.GetDbPassword().c_str());
+	//acc_login->set_option("connect_timeout", "10");
 	conn = mariadb::connection::create(acc_login);
+	
 }
 
 mydb::Connection::~Connection()
@@ -17,7 +19,7 @@ mydb::Connection::~Connection()
 	if (conn->connected())
 	{
 		conn->disconnect();
-		TRACE("Disconnesso");
+		//TRACE("Disconnesso");
 	}
 }
 
@@ -29,7 +31,7 @@ mariadb::connection_ref mydb::Connection::connect()
 
 		if (conn->connected())
 		{
-			TRACE("Connesso");
+			//TRACE("Connesso");
 			return conn;
 		}
 		else

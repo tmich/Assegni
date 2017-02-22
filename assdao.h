@@ -13,7 +13,8 @@ public:
 	~AssegnoDao();
 
 	Assegno getById(long id);
-	std::vector<Assegno> getByLibretto(const Libretto&);
+	std::vector<Assegno> getByLibretto(long idLibretto);
+	//std::vector<Assegno> getByLibretto(const Libretto&);
 	std::vector<Assegno> getEmessi(const Azienda&, unsigned int anno, unsigned short mese=0);
 	void salva(Assegno& assegno);
 	void annulla(Assegno& assegno);

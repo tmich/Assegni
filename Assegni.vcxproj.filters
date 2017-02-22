@@ -111,6 +111,12 @@
     <ClInclude Include="wc_to_mb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dlgconto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -197,6 +203,12 @@
     <ClCompile Include="wc_to_mb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dlgconto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Assegni.rc">
@@ -223,6 +235,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="m2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bank.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bank-01.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bank-01-green.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

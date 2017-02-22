@@ -103,7 +103,7 @@ void DlgDettaglioAssegno::OnSalva()
 		return;
 	}
 
-	Assegno *apt = m_cmbAssegni.GetSelectedItem();
+	Assegno apt = m_cmbAssegni.GetSelectedItem();
 	std::wstring note = m_txtCausAss.GetWindowTextW().c_str();
 
 	// è stato sbloccato?
@@ -111,7 +111,7 @@ void DlgDettaglioAssegno::OnSalva()
 	{
 		try
 		{
-			asdao.annulla(*apt);
+			asdao.annulla(apt);
 		}
 		catch (const std::exception&)
 		{
@@ -121,7 +121,7 @@ void DlgDettaglioAssegno::OnSalva()
 		}
 	}
 
-	if (!apt->emesso())
+	if (!apt.emesso())
 	{
 		// beneficiario
 		std::wstring beneficiario = m_txtIntAss.GetWindowTextW().c_str();
@@ -144,7 +144,7 @@ void DlgDettaglioAssegno::OnSalva()
 		wchar_t* end;
 		double importo = std::wcstod(sImp.c_str(), &end);
 
-		apt->emetti(beneficiario, dtm::date{ dayEmis,monthEmis,yearEmis }, 
+		apt.emetti(beneficiario, dtm::date{ dayEmis,monthEmis,yearEmis }, 
 			dtm::date{ dayScad,monthScad,yearScad }, importo, note);
 
 		/*try
@@ -163,14 +163,14 @@ void DlgDettaglioAssegno::OnSalva()
 	{
 		SYSTEMTIME st2 = m_dtIncass.GetTime();
 		dtm::date dtIncass{ st2.wDay, st2.wMonth, st2.wYear };
-		apt->incassa(dtIncass);
+		apt.incassa(dtIncass);
 	}
 	
-	apt->setNote(note);
+	apt.setNote(note);
 
 	try
 	{
-		asdao.salva(*apt);
+		asdao.salva(apt);
 		MessageBox(_T("Salvato"), _T("Gestione assegni"), MB_ICONINFORMATION);
 	}
 	catch (const std::exception&)
@@ -191,23 +191,21 @@ void DlgDettaglioAssegno::OnAzienda()
 
 void DlgDettaglioAssegno::OnConto()
 {
-	ContoCorrente * cc = m_cmbConti.GetSelectedItem();
-	m_cmbLibretti.Aggiorna(*cc);
+	ContoCorrente cc = m_cmbConti.GetSelectedItem();
+	m_cmbLibretti.Aggiorna(cc);
 }
 
 void DlgDettaglioAssegno::OnLibretto()
 {
-	Libretto * lib = m_cmbLibretti.GetSelectedItem();
-	if (lib != nullptr)
-	{
-		AssegnoDao asdao;
-		std::vector<Assegno> assegni = asdao.getByLibretto(*lib);
-		std::vector<Assegno> assegniNonEmessi{ assegni.size() };
-		auto it = std::copy_if(assegni.begin(), assegni.end(),
-			assegniNonEmessi.begin(), [=](Assegno a) { return !a.emesso(); });
-		assegniNonEmessi.resize(std::distance(assegniNonEmessi.begin(), it));	// shrink container to new size
-		m_cmbAssegni.Aggiorna(assegniNonEmessi);
-	}
+	Libretto lib = m_cmbLibretti.GetSelectedItem();
+	
+	AssegnoDao asdao;
+	std::vector<Assegno> assegni = asdao.getByLibretto(lib.getId());
+	std::vector<Assegno> assegniNonEmessi{ assegni.size() };
+	auto it = std::copy_if(assegni.begin(), assegni.end(),
+		assegniNonEmessi.begin(), [=](Assegno a) { return !a.emesso(); });
+	assegniNonEmessi.resize(std::distance(assegniNonEmessi.begin(), it));	// shrink container to new size
+	m_cmbAssegni.Aggiorna(assegniNonEmessi);
 }
 
 void DlgDettaglioAssegno::OnIncassato()

@@ -11,7 +11,7 @@ public:
 	~CComboLibretti();
 
 	void Aggiorna(const ContoCorrente&);
-	Libretto * GetSelectedItem() const;
+	Libretto GetSelectedItem() const;
 private:
 	std::vector<Libretto> m_libretti;
 };
