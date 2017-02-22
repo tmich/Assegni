@@ -336,7 +336,7 @@ void DlgContoStateModifica::Elimina()
 		}
 		else
 		{
-			m_context->Notifica(_T("Si è verificato un errore"), _T("Elimina"), MB_ICONWARNING);
+			m_context->Notifica(_T("Impossibile eliminare. Probabilmente ci sono dei libretti già caricati."), _T("Elimina"), MB_ICONWARNING);
 		}
 	}
 }
