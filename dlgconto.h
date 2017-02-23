@@ -1,8 +1,8 @@
 #pragma once
 #include "cmbazienda.h"
 #include "contocorrente.h"
+//#include "CShell32.h"
 #include <memory>
-
 
 /***************** DlgContoState *****************/
 class DlgConto;
@@ -51,6 +51,7 @@ protected:
 	bool OnAnnulla();
 	bool OnElimina();
 	void Pulisci();
+	void AbilitaPaginatore(bool abilita = true);
 
 	CComboAziende m_cmbAzienda;
 	std::vector<ContoCorrente> m_conti;
@@ -61,6 +62,7 @@ protected:
 	CButton m_btnNuovo, m_btnSalva, m_btnAnnulla, m_btnElimina;
 
 	std::unique_ptr<DlgContoState> m_state;
+	//CShell32 shell32;
 };
 
 /***************** DlgContoStateNull *****************/

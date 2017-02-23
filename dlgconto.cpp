@@ -25,7 +25,13 @@ BOOL DlgConto::OnInitDialog()
 	AttachItem(IDC_BTNSALVABANCA, m_btnSalva);
 	AttachItem(IDC_BTNANNULLABANCA, m_btnAnnulla);
 	AttachItem(IDC_BTNELIMINABANCA, m_btnElimina);
-	//m_btnNuovo.EnableWindow(false);
+	
+	// icone
+	m_btnElimina.SetIcon((HICON)::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_TRASH), IMAGE_ICON, 24, 24, NULL));
+	m_btnSalva.SetIcon((HICON)::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_DISK), IMAGE_ICON, 24, 24, NULL));
+	m_btnAnnulla.SetIcon((HICON)::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_CANCEL), IMAGE_ICON, 24, 24, NULL));
+	m_btnNuovo.SetIcon((HICON)::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_NEW), IMAGE_ICON, 24, 24, NULL));
+	
 
 	// stato iniziale
 	m_state.reset(new DlgContoStateNull(this));
@@ -221,6 +227,13 @@ void DlgConto::Pulisci()
 	m_pagerText.SetWindowTextW(_T(""));
 }
 
+void DlgConto::AbilitaPaginatore(bool abilita)
+{
+	::EnableWindow(::GetDlgItem(*this, IDC_BTNPREVBANCA), abilita);
+	::EnableWindow(::GetDlgItem(*this, IDC_BTNNEXTBANCA), abilita);
+	m_pagerText.EnableWindow(abilita);
+}
+
 DlgContoStateInserimento::DlgContoStateInserimento(DlgConto *context)
 	: DlgContoState{ context }
 {
@@ -232,6 +245,8 @@ DlgContoStateInserimento::DlgContoStateInserimento(DlgConto *context)
 	m_context->m_btnSalva.EnableWindow(true);
 	m_context->m_btnAnnulla.EnableWindow(true);
 	m_context->m_btnElimina.EnableWindow(false);
+
+	m_context->AbilitaPaginatore(false);
 }
 
 DlgContoStateInserimento::~DlgContoStateInserimento()
@@ -288,6 +303,7 @@ DlgContoStateModifica::DlgContoStateModifica(DlgConto *context)
 	m_context->m_btnSalva.EnableWindow(true);
 	m_context->m_btnAnnulla.EnableWindow(true);
 	m_context->m_btnElimina.EnableWindow(true);
+	m_context->AbilitaPaginatore(true);
 }
 
 void DlgContoStateModifica::Salva()

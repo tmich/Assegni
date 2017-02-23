@@ -13,12 +13,14 @@ class DlgDettaglioAssegno : public CDialog
 public:
 	DlgDettaglioAssegno();
 	DlgDettaglioAssegno(long idAssegno);
-
 	~DlgDettaglioAssegno();
-
 private:
 	virtual BOOL OnInitDialog() override;
-	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
+	virtual void OnDraw(CDC & dc) override;
+	virtual BOOL DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+	
+	LRESULT OnColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void OnSalva();
 	void OnAzienda();
 	void OnConto();

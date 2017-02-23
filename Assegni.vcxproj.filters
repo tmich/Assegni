@@ -117,6 +117,9 @@
     <ClInclude Include="log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CShell32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -209,6 +212,9 @@
     <ClCompile Include="log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CShell32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Assegni.rc">
@@ -216,34 +222,43 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bank.ico">
+    <Image Include="res\bank-01-green.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="pen.ico">
+    <Image Include="res\assegno-rosa.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="find.ico">
+    <Image Include="res\bank.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="lock.ico">
+    <Image Include="res\booklet.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="unlock.ico">
+    <Image Include="res\find.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="booklet.ico">
+    <Image Include="res\lock.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="m2.bmp">
+    <Image Include="res\unlock.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="bank.png">
+    <Image Include="res\pen.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="bank-01.ico">
+    <Image Include="res\tick.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="bank-01-green.ico">
+    <Image Include="res\trash.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\cancel.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\new.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\disk.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

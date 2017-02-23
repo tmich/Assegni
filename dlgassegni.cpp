@@ -34,13 +34,13 @@ BOOL DlgAssegni::OnInitDialog()
 
 	//Icona dei pulsanti
 	m_btnNuovoAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_PEN), IMAGE_ICON, 48, 48, LR_SHARED)));
-	m_btnCercaAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_FIND), IMAGE_ICON, 48, 48, LR_SHARED)));
+	//m_btnCercaAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_FIND), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnEmessi.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnNuovoLibretto.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BOOKLET), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnBanche.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
 
 	// Logo
-	m_imgLogo.SetBitmap(::LoadBitmap(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDB_LOGO)));
+	//m_imgLogo.SetBitmap(::LoadBitmap(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDB_LOGO)));
 	return 0;
 }
 

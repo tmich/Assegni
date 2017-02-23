@@ -183,6 +183,39 @@ void DlgDettaglioAssegno::OnSalva()
 	EndDialog(IDOK);
 }
 
+LRESULT DlgDettaglioAssegno::OnColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	HDC hdcStatic = (HDC)wParam;
+	HWND hwnd = (HWND)lParam;
+	LONG id = ::GetWindowLong(hwnd, GWL_ID);
+	if (id == IDC_STATIC)
+	{
+		CDC dc{ hdcStatic };
+		dc.SetTextColor(RGB(0, 0, 0));
+		dc.SetBkMode(TRANSPARENT);
+		return (LRESULT)GetStockObject(NULL_BRUSH);
+	}
+	return 0;
+}
+
+void DlgDettaglioAssegno::OnDraw(CDC & dc)
+{
+	// Logo
+	HICON hIcon = (HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_ASSEGNOROSA), IMAGE_ICON, 0, 0, LR_LOADTRANSPARENT));
+	::DrawIconEx(dc, 0, 0, hIcon, 210, 160, 0, NULL, DI_NORMAL);
+	DestroyIcon(hIcon);
+}
+
+BOOL DlgDettaglioAssegno::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_CTLCOLORSTATIC:	return OnColorStatic(uMsg, wParam, lParam);
+	}
+
+	return DialogProcDefault(uMsg, wParam, lParam);
+}
+
 void DlgDettaglioAssegno::OnAzienda()
 {
 	Azienda * az = m_cmbAzienda.GetSelectedItem();

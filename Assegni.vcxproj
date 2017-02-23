@@ -176,6 +176,7 @@
     <ClInclude Include="cmbmesi.h" />
     <ClInclude Include="cmbanni.h" />
     <ClInclude Include="contocorrente.h" />
+    <ClInclude Include="CShell32.h" />
     <ClInclude Include="datetime.h" />
     <ClInclude Include="dbconn.h" />
     <ClInclude Include="dlgassegni.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="cmbmesi.cpp" />
     <ClCompile Include="cmbanni.cpp" />
     <ClCompile Include="contocorrente.cpp" />
+    <ClCompile Include="CShell32.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="dbconn.cpp" />
     <ClCompile Include="dlgassegni.cpp" />
@@ -238,16 +240,19 @@
     <ResourceCompile Include="Assegni.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bank-01-green.ico" />
-    <Image Include="bank-01.ico" />
-    <Image Include="bank.ico" />
-    <Image Include="bank.png" />
-    <Image Include="booklet.ico" />
-    <Image Include="find.ico" />
-    <Image Include="lock.ico" />
-    <Image Include="m2.bmp" />
-    <Image Include="pen.ico" />
-    <Image Include="unlock.ico" />
+    <Image Include="res\assegno-rosa.ico" />
+    <Image Include="res\bank-01-green.ico" />
+    <Image Include="res\bank.ico" />
+    <Image Include="res\booklet.ico" />
+    <Image Include="res\cancel.ico" />
+    <Image Include="res\disk.ico" />
+    <Image Include="res\find.ico" />
+    <Image Include="res\lock.ico" />
+    <Image Include="res\new.ico" />
+    <Image Include="res\pen.ico" />
+    <Image Include="res\tick.ico" />
+    <Image Include="res\trash.ico" />
+    <Image Include="res\unlock.ico" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Win32++.manifest" />
