@@ -120,6 +120,12 @@
     <ClInclude Include="CShell32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CDBRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlgaziende.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -215,6 +221,12 @@
     <ClCompile Include="CShell32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CDBRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgaziende.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Assegni.rc">
@@ -259,6 +271,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\disk.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\azi.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

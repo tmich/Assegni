@@ -8,7 +8,7 @@ public:
 	CComboAziende();
 	~CComboAziende();
 
-	Azienda * GetSelectedItem() const;
+	Azienda GetSelectedItem() const;
 	void SetSelectedItem(const Azienda&, bool disabled = false);
 private:
 	virtual void OnInitialUpdate() override;

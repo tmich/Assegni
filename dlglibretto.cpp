@@ -151,8 +151,8 @@ void DlgLibretto::DatiLibretto()
 
 void DlgLibretto::OnAzienda()
 {
-	Azienda * az = m_cmbAziende.GetSelectedItem();
-	m_cmbConti.Aggiorna(*az);
+	Azienda az = m_cmbAziende.GetSelectedItem();
+	m_cmbConti.Aggiorna(az);
 }
 
 void DlgLibretto::OnCalcolaNumeri()

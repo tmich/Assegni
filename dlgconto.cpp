@@ -35,7 +35,7 @@ BOOL DlgConto::OnInitDialog()
 
 	// stato iniziale
 	m_state.reset(new DlgContoStateNull(this));
-
+	m_btnNuovo.EnableWindow(false);
 	AggiornaPaginatore();
 	return 0;
 }
@@ -118,16 +118,20 @@ void DlgConto::OnConto()
 {
 	// stato: modifica conto esistente
 	m_state.reset(new DlgContoStateModifica(this));
+	m_btnElimina.EnableWindow(m_conti.size() > 0);
+	m_btnSalva.EnableWindow(m_conti.size() > 0);
+	m_btnAnnulla.EnableWindow(m_conti.size() > 0);
+	
 	AggiornaPaginatore();
 }
 
 void DlgConto::OnAzienda()
 {
-	Azienda * az = m_cmbAzienda.GetSelectedItem();
+	Azienda az = m_cmbAzienda.GetSelectedItem();
 	//TRACE(az->getRagioneSociale().c_str()); TRACE(L"\n");
 	ContoCorrenteDao ccdao;
-	m_conti = ccdao.GetByAzienda(*az);
-
+	m_conti = ccdao.GetByAzienda(az);
+	Pulisci();
 	CString text;
 	size_t sz = m_conti.size();
 	idx = 1;
@@ -136,6 +140,16 @@ void DlgConto::OnAzienda()
 		m_iter = m_conti.begin();
 		OnConto();
 		AggiornaPaginatore();
+	}
+	else
+	{
+		m_txtDenominazione.EnableWindow(false);
+		m_txtNumConto.EnableWindow(false);
+		m_txtSede.EnableWindow(false);
+		m_txtAgenzia.EnableWindow(false);
+		m_txtNote.EnableWindow(false);
+		m_pagerText.EnableWindow(false);
+		m_state.reset(new DlgContoStateNull(this));
 	}
 }
 
@@ -241,6 +255,13 @@ DlgContoStateInserimento::DlgContoStateInserimento(DlgConto *context)
 	m_context->Pulisci();
 	m_context->m_txtDenominazione.SetFocus();
 
+	m_context->m_txtDenominazione.EnableWindow(true);
+	m_context->m_txtNumConto.EnableWindow(true);
+	m_context->m_txtSede.EnableWindow(true);
+	m_context->m_txtAgenzia.EnableWindow(true);
+	m_context->m_txtNote.EnableWindow(true);
+	//m_pagerText.EnableWindow(false);
+
 	m_context->m_btnNuovo.EnableWindow(false);
 	m_context->m_btnSalva.EnableWindow(true);
 	m_context->m_btnAnnulla.EnableWindow(true);
@@ -264,9 +285,9 @@ void DlgContoStateInserimento::Salva()
 
 	ContoCorrente conto{ numero,banca,sede,agenzia };
 	conto.setNote(note);
-	Azienda *az = m_context->m_cmbAzienda.GetSelectedItem();
+	Azienda az = m_context->m_cmbAzienda.GetSelectedItem();
 	ContoCorrenteDao ccdao;
-	if (ccdao.Insert(conto, az->getId()))
+	if (ccdao.Insert(conto, az.getId()))
 	{
 		m_context->m_conti.push_back(conto);
 		m_context->Notifica(_T("Inserito correttamente"), _T("Inserimento"), MB_ICONINFORMATION);
@@ -280,24 +301,44 @@ void DlgContoStateInserimento::Salva()
 
 void DlgContoStateInserimento::Annulla()
 {
+	size_t sz = m_context->m_conti.size();
+	m_context->m_btnElimina.EnableWindow(sz > 0);
 	m_context->OnConto();
 }
 
 DlgContoStateModifica::DlgContoStateModifica(DlgConto *context)
 	: DlgContoState{ context }
 {
-	auto cc = *m_context->m_iter;
-	m_context->m_txtDenominazione.SetWindowTextW(cc.getBanca().c_str());
-	m_context->m_txtNumConto.SetWindowTextW(cc.getNumero().c_str());
-	m_context->m_txtSede.SetWindowTextW(cc.getSede().c_str());
-	m_context->m_txtAgenzia.SetWindowTextW(cc.getAgenzia().c_str());
-	m_context->m_txtNote.SetWindowTextW(cc.getNote().c_str());
+	if (m_context->m_conti.size() > 0)
+	{
+		try
+		{
+			auto cc = *m_context->m_iter;
+			m_context->m_txtDenominazione.SetWindowTextW(cc.getBanca().c_str());
+			m_context->m_txtNumConto.SetWindowTextW(cc.getNumero().c_str());
+			m_context->m_txtSede.SetWindowTextW(cc.getSede().c_str());
+			m_context->m_txtAgenzia.SetWindowTextW(cc.getAgenzia().c_str());
+			m_context->m_txtNote.SetWindowTextW(cc.getNote().c_str());
+		}
+		catch (const std::exception&)
+		{
 
-	m_context->m_txtDenominazione.EnableWindow();
-	m_context->m_txtNumConto.EnableWindow();
-	m_context->m_txtSede.EnableWindow();
-	m_context->m_txtAgenzia.EnableWindow();
-	m_context->m_txtNote.EnableWindow();
+		}
+	}
+	else
+	{
+		m_context->m_txtDenominazione.SetWindowTextW(_T(""));
+		m_context->m_txtNumConto.SetWindowTextW(_T(""));
+		m_context->m_txtSede.SetWindowTextW(_T(""));
+		m_context->m_txtAgenzia.SetWindowTextW(_T(""));
+		m_context->m_txtNote.SetWindowTextW(_T(""));
+	}
+
+	m_context->m_txtDenominazione.EnableWindow(m_context->m_conti.size() > 0);
+	m_context->m_txtNumConto.EnableWindow(m_context->m_conti.size() > 0);
+	m_context->m_txtSede.EnableWindow(m_context->m_conti.size() > 0);
+	m_context->m_txtAgenzia.EnableWindow(m_context->m_conti.size() > 0);
+	m_context->m_txtNote.EnableWindow(m_context->m_conti.size() > 0);
 
 	m_context->m_btnNuovo.EnableWindow(true);
 	m_context->m_btnSalva.EnableWindow(true);
@@ -339,6 +380,12 @@ void DlgContoStateModifica::Annulla()
 
 void DlgContoStateModifica::Elimina()
 {
+	/*if (m_context->m_iter == 0)
+		return;*/
+
+	if (m_context->m_iter == m_context->m_conti.end())
+		return;
+
 	CString text;
 	text.AppendFormat(_T("Vuoi davvero eliminare il conto %s?"), m_context->m_iter->getBanca().c_str());
 	if (m_context->Conferma(text, _T("Elimina")))
@@ -360,7 +407,8 @@ void DlgContoStateModifica::Elimina()
 DlgContoStateNull::DlgContoStateNull(DlgConto *context)
 	: DlgContoState{ context }
 {
-	m_context->m_btnNuovo.EnableWindow(false);
+	
+	m_context->m_btnNuovo.EnableWindow(true);
 	m_context->m_btnSalva.EnableWindow(false);
 	m_context->m_btnAnnulla.EnableWindow(false);
 	m_context->m_btnElimina.EnableWindow(false);

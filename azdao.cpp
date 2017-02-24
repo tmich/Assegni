@@ -5,6 +5,7 @@
 #include <mariadb++\statement.hpp>
 
 AziendaDao::AziendaDao()
+	: qry{ "select id, ragione_sociale, indirizzo, partita_iva from palmi.azienda " }
 {
 }
 
@@ -17,7 +18,8 @@ void AziendaDao::getById(int id, Azienda& azienda)
 	mydb::Connection conn;
 
 	auto con = conn.connect();
-	auto stmt = con->create_statement("select id, ragione_sociale, indirizzo from palmi.azienda where id = ?");
+	std::string _qry = qry + " where id = ?";
+	auto stmt = con->create_statement(qry.c_str());
 	stmt->set_unsigned16(0, id);
 	auto res = stmt->query();
 	
@@ -29,16 +31,58 @@ void AziendaDao::getById(int id, Azienda& azienda)
 	con->disconnect();
 }
 
-void AziendaDao::save(Azienda azienda) 
+void AziendaDao::save(Azienda& azienda) 
 {
-	if (azienda.getId() == 0)
+	try
 	{
-		//insert
-		//azienda.setId(nuovoid);
+		mydb::Connection conn;
+		auto con = conn.connect();
+
+		if (azienda.getId() == 0)
+		{
+			//insert
+
+			auto stmt = con->create_statement("insert into palmi.azienda (ragione_sociale, indirizzo, partita_iva) values (?, ?, ?);");
+			stmt->set_wstring(0, azienda.getRagioneSociale());
+			stmt->set_wstring(1, azienda.getIndirizzo());
+			stmt->set_wstring(2, azienda.getPartitaIva());
+
+			int nuovoId = stmt->insert();
+			azienda.setId(nuovoId);
+		}
+		else
+		{
+			//update
+			mydb::Connection conn;
+			auto con = conn.connect();
+			auto stmt = con->create_statement("update palmi.azienda set ragione_sociale = ?, indirizzo = ?, partita_iva = ? where id = ?;");
+			stmt->set_wstring(0, azienda.getRagioneSociale());
+			stmt->set_wstring(1, azienda.getIndirizzo());
+			stmt->set_wstring(2, azienda.getPartitaIva());
+			stmt->set_unsigned32(3, azienda.getId());
+
+			int rows = stmt->execute();
+		}
 	}
-	else
+	catch (const std::exception&)
 	{
-		//update
+		throw;
+	}
+}
+
+void AziendaDao::Delete(long idAzienda)
+{
+	mydb::Connection conn;
+	try
+	{
+		auto con = conn.connect();
+		auto stmt = con->create_statement("delete from palmi.azienda where id = ?;");
+		stmt->set_unsigned32(0, idAzienda);
+		stmt->execute();
+	}
+	catch (const std::exception&)
+	{
+		throw;
 	}
 }
 
@@ -48,10 +92,12 @@ Azienda AziendaDao::fromResultset(const mariadb::result_set_ref res)
 	int theId = res->get_unsigned16("id");
 	std::wstring rsoc = res->get_wstring("ragione_sociale");
 	std::wstring indz = res->get_wstring("indirizzo");
+	std::wstring piva = res->is_null("partita_iva") ? _T("") : res->get_wstring("partita_iva");
 
 	azienda.setId(theId);
 	azienda.mRagioneSociale = rsoc;
 	azienda.mIndirizzo = indz;
+	azienda.mPiva = piva;
 
 	return azienda;
 }
@@ -63,7 +109,7 @@ std::vector<Azienda> AziendaDao::all()
 	mydb::Connection conn;
 
 	auto con = conn.connect();
-	auto stmt = con->create_statement("select id, ragione_sociale, indirizzo from palmi.azienda");
+	auto stmt = con->create_statement(qry.c_str());
 	auto res = stmt->query();
 
 	while (res->next())

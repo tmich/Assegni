@@ -218,8 +218,8 @@ BOOL DlgDettaglioAssegno::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void DlgDettaglioAssegno::OnAzienda()
 {
-	Azienda * az = m_cmbAzienda.GetSelectedItem();
-	m_cmbConti.Aggiorna(*az);
+	Azienda az = m_cmbAzienda.GetSelectedItem();
+	m_cmbConti.Aggiorna(az);
 }
 
 void DlgDettaglioAssegno::OnConto()

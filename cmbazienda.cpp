@@ -11,14 +11,11 @@ CComboAziende::~CComboAziende()
 {
 }
 
-Azienda * CComboAziende::GetSelectedItem() const
+Azienda CComboAziende::GetSelectedItem() const
 {
 	int cursel = GetCurSel();
-	if (cursel >= 0)
-	{
-		return (Azienda *)GetItemData(cursel);
-	}
-	return nullptr;
+	int index = GetItemData(cursel);
+	return m_aziende[index];
 }
 
 void CComboAziende::SetSelectedItem(const Azienda & azienda, bool disabled)
@@ -33,15 +30,15 @@ void CComboAziende::OnInitialUpdate()
 	m_aziende = azdao.all();
 
 	int cursel = -1;
-	int i = 0;
-	for (const auto& az : m_aziende)
+	
+	for (size_t i = 0; i < m_aziende.size(); i++)
 	{
-		AddString(az.getRagioneSociale().c_str());
-		if (az.getId() == m_preSelectedId)
+		int x = AddString(m_aziende[i].getRagioneSociale().c_str());
+		if (m_aziende[i].getId() == m_preSelectedId)
 		{
 			cursel = i;
 		}
-		SetItemData(i++, (DWORD)&az);
+		SetItemData(x, i);
 	}
 	
 	SetCurSel(cursel);

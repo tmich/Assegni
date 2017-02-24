@@ -169,6 +169,7 @@
     <ClInclude Include="azdao.h" />
     <ClInclude Include="azienda.h" />
     <ClInclude Include="ccdao.h" />
+    <ClInclude Include="CDBRecord.h" />
     <ClInclude Include="cmbassegni.h" />
     <ClInclude Include="cmbazienda.h" />
     <ClInclude Include="cmbconti.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="datetime.h" />
     <ClInclude Include="dbconn.h" />
     <ClInclude Include="dlgassegni.h" />
+    <ClInclude Include="dlgaziende.h" />
     <ClInclude Include="dlgconto.h" />
     <ClInclude Include="dlgemessi.h" />
     <ClInclude Include="dlgdettassegno.h" />
@@ -204,6 +206,7 @@
     <ClCompile Include="azdao.cpp" />
     <ClCompile Include="azienda.cpp" />
     <ClCompile Include="ccdao.cpp" />
+    <ClCompile Include="CDBRecord.cpp" />
     <ClCompile Include="cmbassegni.cpp" />
     <ClCompile Include="cmbazienda.cpp" />
     <ClCompile Include="cmbconti.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="dbconn.cpp" />
     <ClCompile Include="dlgassegni.cpp" />
+    <ClCompile Include="dlgaziende.cpp" />
     <ClCompile Include="dlgconto.cpp" />
     <ClCompile Include="dlgemessi.cpp" />
     <ClCompile Include="dlgdettassegno.cpp" />
@@ -241,6 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\assegno-rosa.ico" />
+    <Image Include="res\azi.ico" />
     <Image Include="res\bank-01-green.ico" />
     <Image Include="res\bank.ico" />
     <Image Include="res\booklet.ico" />

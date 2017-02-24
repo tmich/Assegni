@@ -1,7 +1,6 @@
 #pragma once
 #include "cmbazienda.h"
 #include "contocorrente.h"
-//#include "CShell32.h"
 #include <memory>
 
 /***************** DlgContoState *****************/
@@ -62,7 +61,6 @@ protected:
 	CButton m_btnNuovo, m_btnSalva, m_btnAnnulla, m_btnElimina;
 
 	std::unique_ptr<DlgContoState> m_state;
-	//CShell32 shell32;
 };
 
 /***************** DlgContoStateNull *****************/

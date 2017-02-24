@@ -11,6 +11,8 @@
 #include <mariadb++\exceptions.hpp>
 #include <stdexcept>
 #include "dbconn.h"
+#include "cmbazienda.h"
+#include "dlgaziende.h"
 
 DlgAssegni::DlgAssegni()
 	: CDialog{ IDD_ASSEGNI }
@@ -31,6 +33,7 @@ BOOL DlgAssegni::OnInitDialog()
 	AttachItem(IDC_BTNEMESSI, m_btnEmessi);
 	AttachItem(IDC_IMGLOGO, m_imgLogo);
 	AttachItem(IDC_BTNBANCHE, m_btnBanche);
+	AttachItem(IDC_BTNAZIENDE, m_btnAziende);
 
 	//Icona dei pulsanti
 	m_btnNuovoAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_PEN), IMAGE_ICON, 48, 48, LR_SHARED)));
@@ -38,7 +41,7 @@ BOOL DlgAssegni::OnInitDialog()
 	m_btnEmessi.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnNuovoLibretto.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BOOKLET), IMAGE_ICON, 48, 48, LR_SHARED)));
 	m_btnBanche.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_BANK), IMAGE_ICON, 48, 48, LR_SHARED)));
-
+	m_btnAziende.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_AZI), IMAGE_ICON, 48, 48, LR_SHARED)));
 	// Logo
 	//m_imgLogo.SetBitmap(::LoadBitmap(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDB_LOGO)));
 	return 0;
@@ -97,6 +100,12 @@ BOOL DlgAssegni::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 		DlgConto dlgConto;
 		dlgConto.DoModal(*this);
+		break;
+	}
+	case IDC_BTNAZIENDE:
+	{
+		DlgAziende dlgAz;
+		dlgAz.DoModal(*this);
 		break;
 	}
 	}

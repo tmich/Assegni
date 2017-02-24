@@ -1,5 +1,4 @@
 #pragma once
-#include "cmbazienda.h"
 
 class DlgAssegni : public CDialog
 {
@@ -13,6 +12,6 @@ private:
 	virtual void OnSettings();
 	virtual void OnConnectionException();
 	
-	CButton m_btnNuovoAssegno, m_btnNuovoLibretto, m_btnCercaAssegno, m_btnEmessi, m_btnBanche;
+	CButton m_btnNuovoAssegno, m_btnNuovoLibretto, m_btnCercaAssegno, m_btnEmessi, m_btnBanche, m_btnAziende;
 	CStatic m_imgLogo;
 };

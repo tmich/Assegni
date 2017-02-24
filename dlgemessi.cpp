@@ -63,12 +63,12 @@ LRESULT DlgAssegniEmessi::OnNotify(WPARAM wParam, LPARAM lParam)
 void DlgAssegniEmessi::OnCerca()
 {
 	m_listAssegni.DeleteAllItems();
-	Azienda *az = m_cmbAziende.GetSelectedItem();
+	Azienda az = m_cmbAziende.GetSelectedItem();
 	unsigned short mese = m_cmbMese.GetSelectedItem();
 	unsigned int anno = m_cmbAnno.GetSelectedItem();
 	
 	services::Service service;
-	assegniEmessi = service.GetAssegniEmessi(*az, anno, mese);
+	assegniEmessi = service.GetAssegniEmessi(az, anno, mese);
 	std::sort(assegniEmessi.begin(), assegniEmessi.end(), [](const Assegno& a1, const Assegno& a2) { return a1.getDataScadenza() < a2.getDataScadenza(); });
 	
 	for (const auto& a : assegniEmessi)
