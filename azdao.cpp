@@ -19,7 +19,7 @@ void AziendaDao::getById(int id, Azienda& azienda)
 
 	auto con = conn.connect();
 	std::string _qry = qry + " where id = ?";
-	auto stmt = con->create_statement(qry.c_str());
+	auto stmt = con->create_statement(_qry.c_str());
 	stmt->set_unsigned16(0, id);
 	auto res = stmt->query();
 	

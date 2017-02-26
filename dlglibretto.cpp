@@ -7,6 +7,7 @@
 #include "assdao.h"
 #include "azdao.h"
 #include "ccdao.h"
+#include <boost\algorithm\string.hpp>
 
 DlgLibretto::DlgLibretto()
 	:CDialog{ IDD_LIBRETTO }
@@ -76,6 +77,12 @@ BOOL DlgLibretto::OnCommand(WPARAM wParam, LPARAM lParam)
 void DlgLibretto::OnOK()
 {
 	// controlli
+	std::wstring codLib = m_txtCodice.GetWindowTextW();
+	std::wstring nLib = m_txtLibretto.GetWindowTextW();
+
+	boost::trim(codLib);
+	boost::trim(nLib);
+
 	if (m_cmbAziende.GetCurSel() < 0)
 	{
 		Errore(_T("Manca l'azienda"));
@@ -86,12 +93,12 @@ void DlgLibretto::OnOK()
 		Errore(_T("Manca il conto corrente d'appoggio"));
 		return;
 	}
-	else if (m_txtLibretto.GetWindowTextLengthW() == 0)
+	else if (nLib.size() == 0)
 	{
-		Errore(_T("Manca il numero del libretto"));
+		Errore(_T("Manca il numero del primo assegno"));
 		return;
 	}
-	else if (m_txtCodice.GetWindowTextLengthW() == 0)
+	else if (codLib.size() == 0)
 	{
 		Errore(_T("Manca il codice del libretto"));
 		return;
@@ -160,11 +167,12 @@ void DlgLibretto::OnCalcolaNumeri()
 	m_lstAssegni.ResetContent();
 	std::wstring nLib = m_txtLibretto.GetWindowTextW();
 
-	for (int i = 1; i <= m_qta; i++)
+	GeneratoreNumeriAssegni gen{ m_qta };
+	auto numeri = gen.Genera(nLib);
+
+	for (const auto& n : numeri)
 	{
-		std::wostringstream ss;
-		ss << nLib << std::setw(2) << std::setfill(_T('0')) << i;
-		m_lstAssegni.AddString(ss.str().c_str());
+		m_lstAssegni.AddString(n.c_str());
 	}
 }
 
@@ -177,8 +185,6 @@ void DlgLibretto::Salva()
 {
 	ContoCorrente cc = m_cmbConti.GetSelectedItem();
 	long id_conto = cc.getId();
-	std::wstring codLib = m_txtCodice.GetWindowTextW();
-	std::wstring nLib = m_txtLibretto.GetWindowTextW();
 	std::vector<std::wstring> assegni;
 	for (int i = 0; i < m_lstAssegni.GetCount(); i++)
 	{
@@ -189,7 +195,14 @@ void DlgLibretto::Salva()
 		delete [] lp;
 		lp = nullptr;
 	}
+
+	std::wstring codLib = m_txtCodice.GetWindowTextW();
+	std::wstring nLib = m_txtLibretto.GetWindowTextW();
+
+	boost::trim(codLib);
+	boost::trim(nLib);
+
 	LibrettoDao libdao;
 	Libretto l = libdao.insert(id_conto, nLib, codLib, m_qta, assegni);
-	::MessageBox(*this, std::to_wstring(l.getId()).c_str(), _T("Salvato"), MB_ICONINFORMATION);
+	::MessageBox(*this, _T("Salvato"), _T("Ok"), MB_ICONINFORMATION);
 }

@@ -1,4 +1,15 @@
 #pragma once
+class GeneratoreNumeriAssegni
+{
+public:
+	GeneratoreNumeriAssegni(int qta);
+	virtual ~GeneratoreNumeriAssegni();
+	
+	std::vector<std::wstring> Genera(std::wstring primoNumero);
+protected:
+	int m_qta;
+};
+
 class Libretto
 {
 public:
