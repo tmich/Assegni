@@ -54,6 +54,9 @@ BOOL DlgDettaglioAssegno::OnInitDialog()
 	m_btnSblocca.EnableWindow(false);
 	m_btnSblocca.SetIcon(::LoadIcon(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_LOCK)));
 
+	// data scadenza a null di default
+	m_dtScadenza.SetTimeNone();
+
 	m_cmbAssegni.ResetContent();
 	
 	if (m_idAssegno != 0)
@@ -128,13 +131,24 @@ void DlgDettaglioAssegno::OnSalva()
 
 		// data emissione
 		SYSTEMTIME dtEmis = m_dtAss.GetTime();
+		if (dtEmis.wDay == 0 || dtEmis.wMonth == 0 || dtEmis.wYear == 0)
+		{
+			MessageBox(_T("Inserire la data di emissione"), _T("Attenzione"), MB_ICONEXCLAMATION);
+			return;
+		}
 		unsigned int dayEmis, monthEmis, yearEmis;
 		dayEmis = dtEmis.wDay;
 		monthEmis = dtEmis.wMonth;
 		yearEmis = dtEmis.wYear;
 
-		// data scadenza
+		// controllo data scadenza
 		SYSTEMTIME dtScad = m_dtScadenza.GetTime();
+		if (dtScad.wDay == 0 || dtScad.wMonth == 0 || dtScad.wYear == 0)
+		{
+			MessageBox(_T("Inserire la data di scadenza"), _T("Attenzione"), MB_ICONEXCLAMATION);
+			return;
+		}
+
 		unsigned int dayScad, monthScad, yearScad;
 		dayScad = dtScad.wDay;
 		monthScad = dtScad.wMonth;
@@ -297,6 +311,7 @@ void DlgDettaglioAssegno::DatiAssegno()
 	st3.wYear = dtScad.year();
 	m_dtScadenza.SetTime(st3);
 
+	auto importo = assegno.getImporto();
 	std::wstring sImporto = std::to_wstring(assegno.getImporto());
 	std::vector<std::wstring> tokens = utils::split(sImporto, _T("."));
 	assert(tokens.size() >= 1);

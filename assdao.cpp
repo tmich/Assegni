@@ -64,29 +64,29 @@ std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az, unsigned int anno,
 	mydb::Connection conn;
 
 	auto con = conn.connect();
-	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
-	sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
-	sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
-	sql += "INNER JOIN palmi.azienda az on az.id = cc.id_azienda ";
-	sql += "WHERE az.id = ? and a.data_incasso IS NULL and a.data_emissione IS NOT NULL and year(a.data_emissione) = ? ";
-	//sql += "ORDER BY a.data_scadenza";
+	std::string sql = createQuery(az.getId(), anno, 0, mese, 0);
 	
-	if (mese > 0 && mese <= 12)
-		sql += " and month(data_emissione) = ?";
-
 	try
 	{
 		auto stmt = con->create_statement(sql.c_str());
 		stmt->set_unsigned32(0, az.getId());
-		stmt->set_unsigned32(1, anno);
-		if (mese > 0 && mese <= 12)
-			stmt->set_unsigned32(2, mese);
+		
+		if (anno > 0)
+		{
+			stmt->set_unsigned32(1, anno);
+
+			if (mese > 0 && mese <= 12)
+			{
+				stmt->set_unsigned32(2, mese);
+			}
+		}
 
 		auto res = stmt->query();
 
 		while (res->next())
 		{
-			assegniEmessi.push_back(fromResultset(res));
+			Assegno a{ fromResultset(res) };
+			assegniEmessi.push_back(a);
 		}
 	}
 	catch (const mariadb::exception::connection& exc)
@@ -94,6 +94,106 @@ std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az, unsigned int anno,
 		TRACE(exc.what());
 	}
 	
+
+	con->disconnect();
+	return assegniEmessi;
+}
+
+std::vector<Assegno> AssegnoDao::getEmessi(const Azienda & az, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+{
+	std::vector<Assegno> assegniEmessi;
+	mydb::Connection conn;
+
+	auto con = conn.connect();
+	std::string sql = createQuery(az.getId(), annoDal, annoAl, meseDal, meseAl);
+
+	try
+	{
+		auto stmt = con->create_statement(sql.c_str());
+		stmt->set_unsigned32(0, az.getId());
+
+		if (annoDal > 0)
+		{
+			stmt->set_unsigned32(1, annoDal);
+
+			if (meseDal > 0 && meseDal <= 12)
+			{
+				stmt->set_unsigned32(2, meseDal);
+			}
+
+			if (annoAl > 0)
+			{
+				stmt->set_unsigned32(3, annoAl);
+
+				if (meseAl > 0 && meseAl <= 12)
+				{
+					stmt->set_unsigned32(4, meseAl);
+				}
+			}
+		}
+
+		auto res = stmt->query();
+
+		while (res->next())
+		{
+			Assegno a{ fromResultset(res) };
+			assegniEmessi.push_back(a);
+		}
+	}
+	catch (const mariadb::exception::connection& exc)
+	{
+		TRACE(exc.what());
+	}
+
+
+	con->disconnect();
+	return assegniEmessi;
+}
+
+std::vector<Assegno> AssegnoDao::getEmessi(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+{
+	std::vector<Assegno> assegniEmessi;
+	mydb::Connection conn;
+
+	auto con = conn.connect();
+	std::string sql = createQuery(annoDal, annoAl, meseDal, meseAl);
+
+	try
+	{
+		auto stmt = con->create_statement(sql.c_str());
+		
+		if (annoDal > 0)
+		{
+			stmt->set_unsigned32(0, annoDal);
+
+			if (meseDal > 0 && meseDal <= 12)
+			{
+				stmt->set_unsigned32(1, meseDal);
+			}
+
+			if (annoAl > 0)
+			{
+				stmt->set_unsigned32(2, annoAl);
+
+				if (meseAl > 0 && meseAl <= 12)
+				{
+					stmt->set_unsigned32(3, meseAl);
+				}
+			}
+		}
+
+		auto res = stmt->query();
+
+		while (res->next())
+		{
+			Assegno a{ fromResultset(res) };
+			assegniEmessi.push_back(a);
+		}
+	}
+	catch (const mariadb::exception::connection& exc)
+	{
+		TRACE(exc.what());
+	}
 
 	con->disconnect();
 	return assegniEmessi;
@@ -153,6 +253,46 @@ void AssegnoDao::annulla(Assegno& assegno)
 			assegno.annullaEmissione();
 		}
 	}
+}
+
+std::string AssegnoDao::createQuery(unsigned int idAzienda, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+{
+	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
+	sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
+	sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
+	sql += "INNER JOIN palmi.azienda az on az.id = cc.id_azienda ";
+	sql += "WHERE a.data_incasso IS NULL and a.data_emissione IS NOT NULL ";
+
+	if (idAzienda > 0)
+	{
+		sql += " and az.id = ? ";
+	}
+
+	if (annoDal > 0)
+	{
+		sql += " and (year(a.data_scadenza) >= ? ";
+
+		if (meseDal > 0 && meseDal <= 12)
+		{
+			sql += " and month(a.data_scadenza) >= ?";
+		}
+
+		sql += ")";
+
+		if (annoAl > 0)
+		{
+			sql += " and (year(a.data_scadenza) <= ? ";
+
+			if (meseAl > 0 && meseAl <= 12)
+			{
+				sql += " and month(a.data_scadenza) <= ?";
+			}
+
+			sql += ")";
+		}
+	}
+
+	return sql;
 }
 
 Assegno AssegnoDao::fromResultset(const mariadb::result_set_ref res)

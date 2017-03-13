@@ -15,6 +15,7 @@ void CComboMesi::OnInitialUpdate()
 {
 	std::map<unsigned short, std::wstring> m_mesi
 	{
+		std::pair<unsigned short, std::wstring>{0, _T("(tutti)")},
 		std::pair<unsigned short, std::wstring>{1, _T("Gennaio")},
 		std::pair<unsigned short, std::wstring>{2, _T("Febbraio")},
 		std::pair<unsigned short, std::wstring>{3, _T("Marzo")},

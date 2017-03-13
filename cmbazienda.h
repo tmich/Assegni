@@ -10,9 +10,17 @@ public:
 
 	Azienda GetSelectedItem() const;
 	void SetSelectedItem(const Azienda&, bool disabled = false);
-private:
+protected:
 	virtual void OnInitialUpdate() override;
 	std::vector<Azienda> m_aziende;
 	int m_preSelectedId;
 	bool m_enabled;
+};
+
+class CComboAziendeTutte : public CComboAziende
+{
+public:
+	Azienda GetSelectedItem() const;
+private:
+	virtual void OnInitialUpdate() override;
 };

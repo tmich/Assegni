@@ -6,6 +6,8 @@
 #include <sstream>
 #include "utils.h"
 #include <algorithm>
+#include "notfoundex.h"
+#include "libdao.h"
 
 DlgAssegniEmessi::DlgAssegniEmessi()
 	: CDialog{ IDD_ASSEGNIEMESSI }
@@ -20,15 +22,19 @@ DlgAssegniEmessi::~DlgAssegniEmessi()
 BOOL DlgAssegniEmessi::OnInitDialog()
 {
 	AttachItem(IDC_CMBAZEM, m_cmbAziende);
-	AttachItem(IDC_CMBMESIEM, m_cmbMese);
-	AttachItem(IDC_CMBANNIEM, m_cmbAnno);
+	AttachItem(IDC_CMBMESIEM, m_cmbMeseDal);
+	AttachItem(IDC_CMBANNIEM, m_cmbAnnoDal);
+	AttachItem(IDC_CMBMESIEM2, m_cmbMeseAl);
+	AttachItem(IDC_CMBANNIEM2, m_cmbAnnoAl);
 	AttachItem(IDC_LISTASSEGNIEMESSI, m_listAssegni);
 
-	m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 100);
-	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 150);
-	m_listAssegni.InsertColumn(2, _T("Intestato a"), 0, 280);
+	m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
+	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 160);
+	m_listAssegni.InsertColumn(2, _T("Intestato a"), 0, 300);
 	m_listAssegni.InsertColumn(3, _T("Importo"), 0, 100);
+	m_listAssegni.InsertColumn(4, _T("Libretto"), 0, 120);
 	m_listAssegni.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+
 	return 0;
 }
 
@@ -63,12 +69,26 @@ LRESULT DlgAssegniEmessi::OnNotify(WPARAM wParam, LPARAM lParam)
 void DlgAssegniEmessi::OnCerca()
 {
 	m_listAssegni.DeleteAllItems();
-	Azienda az = m_cmbAziende.GetSelectedItem();
-	unsigned short mese = m_cmbMese.GetSelectedItem();
-	unsigned int anno = m_cmbAnno.GetSelectedItem();
+	unsigned int annoDal = m_cmbAnnoDal.GetSelectedItem();
+	unsigned short meseDal = m_cmbMeseDal.GetSelectedItem();
+	unsigned int annoAl = m_cmbAnnoAl.GetSelectedItem();
+	unsigned short meseAl = m_cmbMeseAl.GetSelectedItem();
 	
 	services::Service service;
-	assegniEmessi = service.GetAssegniEmessi(az, anno, mese);
+	
+	try
+	{
+		Azienda az = m_cmbAziende.GetSelectedItem();
+		assegniEmessi = service.GetAssegniEmessi(az, annoDal, meseDal, annoAl, meseAl);
+	}
+	catch (const NotFoundException)
+	{
+		// azienda non selezionata, cerco tutti gli assegni per date
+		assegniEmessi = service.GetAssegniEmessi(annoDal, meseDal, annoAl, meseAl);
+	}
+	
+
+	// ordino per data scadenza
 	std::sort(assegniEmessi.begin(), assegniEmessi.end(), [](const Assegno& a1, const Assegno& a2) { return a1.getDataScadenza() < a2.getDataScadenza(); });
 	
 	for (const auto& a : assegniEmessi)
@@ -112,23 +132,36 @@ void DlgAssegniEmessi::Aggiungi(const Assegno & a)
 		<< std::setw(2) << std::setfill(_T('0')) << dtScadenza.month() << _T('/')
 		<< dtScadenza.year();
 	std::wstring dataScadenza = s2.str();
-
+	
 	LVITEM lv{ 0 };
+
+	// data scadenza
 	lv.iItem = i;
 	lv.mask = LVFIF_TEXT;
 	lv.pszText = (LPWSTR)(dataScadenza.c_str());
 	m_listAssegni.InsertItem(lv);
 
+	// numero
 	lv.iSubItem = 1;
 	lv.pszText = (LPWSTR)numero.c_str();
 	m_listAssegni.SetItem(lv);
 
+	// intestatario
 	lv.iSubItem = 2;
 	lv.pszText = (LPWSTR)intest.c_str();
 	m_listAssegni.SetItem(lv);
 
+	// importo
 	lv.iSubItem = 3;
 	lv.pszText = (LPWSTR)importo.c_str();
+	m_listAssegni.SetItem(lv);
+
+	// libretto
+	LibrettoDao libdao;
+	Libretto l = libdao.getById(a.getIdLibretto());
+	std::wstring codiceLibretto{ l.getCodice() };
+	lv.iSubItem = 4;
+	lv.pszText = (LPWSTR)(codiceLibretto.c_str());
 	m_listAssegni.SetItem(lv);
 
 	m_listAssegni.SetItemData(i, (DWORD_PTR)&a);

@@ -39,8 +39,8 @@ BOOL DlgLibretto::OnInitDialog()
 	AttachItem(IDC_RB10, m_rbQta10);
 	AttachItem(IDC_RB20, m_rbQta20);
 
-	::SendDlgItemMessage(*this, IDC_RB20, BM_SETCHECK, BST_CHECKED, 0);
-	m_qta = 20;
+	::SendDlgItemMessage(*this, IDC_RB10, BM_SETCHECK, BST_CHECKED, 0);
+	m_qta = 10;
 
 	if (m_idLibretto > 0)
 	{

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "cmbazienda.h"
+#include "notfoundex.h"
 
 CComboAziende::CComboAziende()
 {
@@ -43,4 +44,17 @@ void CComboAziende::OnInitialUpdate()
 	
 	SetCurSel(cursel);
 	EnableWindow(m_enabled);
+}
+
+void CComboAziendeTutte::OnInitialUpdate()
+{
+	int x = AddString(_T("(tutte)"));
+	SetItemData(x, -1);
+	CComboAziende::OnInitialUpdate();
+	SetCurSel(x);
+}
+
+Azienda CComboAziendeTutte::GetSelectedItem() const
+{
+	throw NotFoundException();
 }
