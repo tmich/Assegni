@@ -91,7 +91,14 @@ BOOL DlgAziende::OnCommand(WPARAM wParam, LPARAM lParam)
 
 void DlgAziende::OnAzienda()
 {
-	m_state.reset(new DlgAziendeStateModifica(this));
+	if (m_aziende.size() > 0)
+	{
+		m_state.reset(new DlgAziendeStateModifica(this));
+	}
+	else
+	{
+		m_state.reset(new DlgAziendeStateNull(this));
+	}
 }
 
 
@@ -99,10 +106,14 @@ void DlgAziende::OnAzienda()
 DlgAziendeStateNull::DlgAziendeStateNull(DlgAziende * context)
 	: DlgAziendeState{ context }
 {
-	/*m_context->m_btnNuovo.EnableWindow(false);
-	m_context->m_btnSalva.EnableWindow(false);
-	m_context->m_btnAnnulla.EnableWindow(false);
-	m_context->m_btnElimina.EnableWindow(false);*/
+	m_context->m_btnNuovaAz.EnableWindow(true);
+	m_context->m_btnSalvaAz.EnableWindow(false);
+	m_context->m_btnAnnullaAz.EnableWindow(false);
+	m_context->m_btnEliminaAz.EnableWindow(false);
+
+	m_context->m_txtRagSoc.EnableWindow(false);
+	m_context->m_txtIndirizzo.EnableWindow(false);
+	m_context->m_txtPiva.EnableWindow(false);
 }
 
 /***************** DlgAziendeStateModifica *****************/
@@ -112,10 +123,16 @@ DlgAziendeStateModifica::DlgAziendeStateModifica(DlgAziende * context)
 	size_t n = m_context->m_aziende.size();
 	m_context->m_dbrec.SetMax(n);
 
-	m_context->m_txtRagSoc.SetWindowTextW(m_context->m_iter->getRagioneSociale().c_str());
-	m_context->m_txtIndirizzo.SetWindowTextW(m_context->m_iter->getIndirizzo().c_str());
-	m_context->m_txtPiva.SetWindowTextW(m_context->m_iter->getPartitaIva().c_str());
+	m_context->m_txtRagSoc.EnableWindow(true);
+	m_context->m_txtIndirizzo.EnableWindow(true);
+	m_context->m_txtPiva.EnableWindow(true);
 
+	if (m_context->m_aziende.size() > 0)
+	{
+		m_context->m_txtRagSoc.SetWindowTextW(m_context->m_iter->getRagioneSociale().c_str());
+		m_context->m_txtIndirizzo.SetWindowTextW(m_context->m_iter->getIndirizzo().c_str());
+		m_context->m_txtPiva.SetWindowTextW(m_context->m_iter->getPartitaIva().c_str());
+	}
 	m_context->m_btnNuovaAz.EnableWindow(true);
 	m_context->m_btnEliminaAz.EnableWindow(true);
 }
@@ -183,6 +200,12 @@ DlgAziendeStateInserimento::DlgAziendeStateInserimento(DlgAziende * context)
 {
 	m_context->m_btnNuovaAz.EnableWindow(false);
 	m_context->m_btnEliminaAz.EnableWindow(false);
+	m_context->m_btnAnnullaAz.EnableWindow(true);
+	m_context->m_btnSalvaAz.EnableWindow(true);
+
+	m_context->m_txtRagSoc.EnableWindow(true);
+	m_context->m_txtIndirizzo.EnableWindow(true);
+	m_context->m_txtPiva.EnableWindow(true);
 
 	m_context->m_txtRagSoc.SetWindowTextW(_T(""));
 	m_context->m_txtIndirizzo.SetWindowTextW(_T(""));
@@ -202,6 +225,12 @@ void DlgAziendeStateInserimento::Salva()
 	indir = m_context->m_txtIndirizzo.GetWindowTextW();
 	piva = m_context->m_txtPiva.GetWindowTextW();
 
+	if (ragsoc.size() == 0)
+	{
+		m_context->MessageBoxW(_T("Inserire la denominazione dell'azienda!"), _T("Attenzione"), MB_ICONWARNING);
+		return;
+	}
+
 	Azienda az{ ragsoc,indir };
 	az.setPartitaIva(piva);
 
@@ -210,7 +239,9 @@ void DlgAziendeStateInserimento::Salva()
 		AziendaDao azdao;
 		azdao.save(az);
 		m_context->m_aziende.push_back(az);
+		m_context->m_iter = m_context->m_aziende.end() - 1;
 		::MessageBox(*m_context, _T("Inserito"), _T("Inserimento"), MB_ICONINFORMATION);
+		m_context->EndDialog(IDOK);
 	}
 	catch (const std::exception&)
 	{
