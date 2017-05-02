@@ -8,6 +8,8 @@
 #include <algorithm>
 #include "notfoundex.h"
 #include "libdao.h"
+#include "ccdao.h"
+#include "azdao.h"
 
 DlgAssegniEmessi::DlgAssegniEmessi()
 	: CDialog{ IDD_ASSEGNIEMESSI }
@@ -27,13 +29,17 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 	AttachItem(IDC_CMBMESIEM2, m_cmbMeseAl);
 	AttachItem(IDC_CMBANNIEM2, m_cmbAnnoAl);
 	AttachItem(IDC_LISTASSEGNIEMESSI, m_listAssegni);
+	AttachItem(IDC_CMBBANCHEM, m_cmbConti);
 
 	m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
 	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 160);
 	m_listAssegni.InsertColumn(2, _T("Intestato a"), 0, 300);
 	m_listAssegni.InsertColumn(3, _T("Importo"), 0, 100);
 	m_listAssegni.InsertColumn(4, _T("Libretto"), 0, 120);
+	m_listAssegni.InsertColumn(5, _T("Azienda"), 0, 120);
 	m_listAssegni.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+
+	m_cmbConti.Aggiorna();
 
 	return 0;
 }
@@ -68,23 +74,31 @@ LRESULT DlgAssegniEmessi::OnNotify(WPARAM wParam, LPARAM lParam)
 
 void DlgAssegniEmessi::OnCerca()
 {
-	m_listAssegni.DeleteAllItems();
-	unsigned int annoDal = m_cmbAnnoDal.GetSelectedItem();
-	unsigned short meseDal = m_cmbMeseDal.GetSelectedItem();
-	unsigned int annoAl = m_cmbAnnoAl.GetSelectedItem();
-	unsigned short meseAl = m_cmbMeseAl.GetSelectedItem();
-	
 	services::Service service;
-	
+	unsigned int annoDal = 0, meseDal = 0, annoAl = 0, meseAl = 0;
+
 	try
 	{
-		Azienda az = m_cmbAziende.GetSelectedItem();
-		assegniEmessi = service.GetAssegniEmessi(az, annoDal, meseDal, annoAl, meseAl);
+		//Azienda az = m_cmbAziende.GetSelectedItem();
+		//assegniEmessi = service.GetAssegniEmessi(az, annoDal, meseDal, annoAl, meseAl);
+
+		m_listAssegni.DeleteAllItems();
+		annoDal = m_cmbAnnoDal.GetSelectedItem();
+		meseDal = m_cmbMeseDal.GetSelectedItem();
+		annoAl = m_cmbAnnoAl.GetSelectedItem();
+		meseAl = m_cmbMeseAl.GetSelectedItem();
+
+		ContoCorrente cc = m_cmbConti.GetSelectedItem();
+		assegniEmessi = service.GetAssegniEmessi(cc, annoDal, meseDal, annoAl, meseAl);
 	}
-	catch (const NotFoundException)
+	catch (const NotFoundException&)
 	{
-		// azienda non selezionata, cerco tutti gli assegni per date
+		// conto corrente non selezionato, cerco tutti gli assegni per date
 		assegniEmessi = service.GetAssegniEmessi(annoDal, meseDal, annoAl, meseAl);
+	}
+	catch (const std::exception&)
+	{
+		MessageBox(_T("Errore"), _T("Eccezione"), MB_ICONEXCLAMATION);
 	}
 	
 
@@ -162,6 +176,17 @@ void DlgAssegniEmessi::Aggiungi(const Assegno & a)
 	std::wstring codiceLibretto{ l.getCodice() };
 	lv.iSubItem = 4;
 	lv.pszText = (LPWSTR)(codiceLibretto.c_str());
+	m_listAssegni.SetItem(lv);
+
+	// assegno
+	AziendaDao azdao;
+	ContoCorrenteDao ccdao;
+	ContoCorrente cc = ccdao.GetById(l.getIdConto());
+	Azienda az;
+	azdao.getById(cc.getIdAzienda(), az);
+	lv.iSubItem = 5;
+	std::wstring azDenom{ az.getRagioneSociale() };
+	lv.pszText = (LPWSTR)(azDenom.c_str());
 	m_listAssegni.SetItem(lv);
 
 	m_listAssegni.SetItemData(i, (DWORD_PTR)&a);

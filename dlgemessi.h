@@ -2,6 +2,7 @@
 #include <wxx_dialog.h>
 #include <wxx_listview.h>
 #include "cmbazienda.h"
+#include "cmbconti.h"
 #include "cmbmesi.h"
 #include "cmbanni.h"
 #include "assegno.h"
@@ -21,6 +22,7 @@ private:
 	void Aggiungi(const Assegno& a);
 
 	CComboAziendeTutte m_cmbAziende;
+	CComboConti m_cmbConti;
 	CComboMesi m_cmbMeseDal, m_cmbMeseAl;
 	CComboAnni m_cmbAnnoDal, m_cmbAnnoAl;
 	CListView m_listAssegni;

@@ -31,6 +31,25 @@ ContoCorrente ContoCorrenteDao::GetById(long id)
 	throw NotFoundException();
 }
 
+std::vector<ContoCorrente> ContoCorrenteDao::GetAll()
+{
+	std::vector<ContoCorrente> conti;
+	mydb::Connection conn;
+
+	auto con = conn.connect();
+	auto stmt = con->create_statement(R"(SELECT id, id_azienda, numero, banca, sede, agenzia,
+		note FROM palmi.conto_corrente)");
+	auto res = stmt->query();
+
+	while (res->next())
+	{
+		conti.push_back(fromResultset(res));
+	}
+
+	con->disconnect();
+	return conti;
+}
+
 std::vector<ContoCorrente> ContoCorrenteDao::GetByAzienda(const Azienda & az)
 {
 	std::vector<ContoCorrente> conti;

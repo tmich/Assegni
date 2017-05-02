@@ -10,6 +10,7 @@ public:
 	CComboConti();
 	~CComboConti();
 
+	void Aggiorna();
 	void Aggiorna(const Azienda&);
 	ContoCorrente GetSelectedItem() const;
 private:

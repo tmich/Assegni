@@ -14,6 +14,7 @@ public:
 	~ContoCorrenteDao();
 
 	ContoCorrente GetById(long id);
+	std::vector<ContoCorrente> GetAll();
 	std::vector<ContoCorrente> GetByAzienda(const Azienda&);
 	bool Insert(ContoCorrente& cc, long idAzienda);
 	bool Update(ContoCorrente& cc);

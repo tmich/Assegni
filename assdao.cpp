@@ -199,6 +199,57 @@ std::vector<Assegno> AssegnoDao::getEmessi(unsigned int annoDal, unsigned int an
 	return assegniEmessi;
 }
 
+std::vector<Assegno> AssegnoDao::getEmessi(const ContoCorrente & cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+{
+	std::vector<Assegno> assegniEmessi;
+	mydb::Connection conn;
+
+	auto con = conn.connect();
+	std::string sql = createQuery(cc, annoDal, annoAl, meseDal, meseAl);
+
+	try
+	{
+		auto stmt = con->create_statement(sql.c_str());
+
+		stmt->set_unsigned32(0, cc.getId());
+
+		if (annoDal > 0)
+		{
+			stmt->set_unsigned32(1, annoDal);
+
+			if (meseDal > 0 && meseDal <= 12)
+			{
+				stmt->set_unsigned32(2, meseDal);
+			}
+
+			if (annoAl > 0)
+			{
+				stmt->set_unsigned32(3, annoAl);
+
+				if (meseAl > 0 && meseAl <= 12)
+				{
+					stmt->set_unsigned32(4, meseAl);
+				}
+			}
+		}
+
+		auto res = stmt->query();
+
+		while (res->next())
+		{
+			Assegno a{ fromResultset(res) };
+			assegniEmessi.push_back(a);
+		}
+	}
+	catch (const mariadb::exception::connection& exc)
+	{
+		TRACE(exc.what());
+	}
+
+	con->disconnect();
+	return assegniEmessi;
+}
+
 void AssegnoDao::salva(Assegno & assegno)
 {
 	mydb::Connection conn;
@@ -267,6 +318,41 @@ std::string AssegnoDao::createQuery(unsigned int idAzienda, unsigned int annoDal
 	{
 		sql += " and az.id = ? ";
 	}
+
+	if (annoDal > 0)
+	{
+		sql += " and (year(a.data_scadenza) >= ? ";
+
+		if (meseDal > 0 && meseDal <= 12)
+		{
+			sql += " and month(a.data_scadenza) >= ?";
+		}
+
+		sql += ")";
+
+		if (annoAl > 0)
+		{
+			sql += " and (year(a.data_scadenza) <= ? ";
+
+			if (meseAl > 0 && meseAl <= 12)
+			{
+				sql += " and month(a.data_scadenza) <= ?";
+			}
+
+			sql += ")";
+		}
+	}
+
+	return sql;
+}
+
+std::string AssegnoDao::createQuery(const ContoCorrente & cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+{
+	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
+	sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
+	sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
+	sql += "WHERE a.data_incasso IS NULL and a.data_emissione IS NOT NULL ";
+	sql += "AND cc.id = ?";
 
 	if (annoDal > 0)
 	{
