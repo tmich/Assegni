@@ -7,6 +7,11 @@
 
 AssegnoDao::AssegnoDao()
 {
+	m_sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
+	m_sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
+	m_sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
+	m_sql += "INNER JOIN palmi.azienda az on az.id = cc.id_azienda ";
+	m_sql += "WHERE a.data_incasso IS NULL and a.data_emissione IS NOT NULL ";
 }
 
 AssegnoDao::~AssegnoDao()
@@ -53,200 +58,24 @@ std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 	return assegni;
 }
 
-//std::vector<Assegno> AssegnoDao::getByLibretto(const Libretto & lib)
-//{
-//	return getByLibretto(lib.getId());
-//}
-
-std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az, unsigned int anno, unsigned short mese)
+std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az)
 {
-	std::vector<Assegno> assegniEmessi;
-	mydb::Connection conn;
-
-	auto con = conn.connect();
-	std::string sql = createQuery(az.getId(), anno, 0, mese, 0);
-	
-	try
-	{
-		auto stmt = con->create_statement(sql.c_str());
-		stmt->set_unsigned32(0, az.getId());
-		
-		if (anno > 0)
-		{
-			stmt->set_unsigned32(1, anno);
-
-			if (mese > 0 && mese <= 12)
-			{
-				stmt->set_unsigned32(2, mese);
-			}
-		}
-
-		auto res = stmt->query();
-
-		while (res->next())
-		{
-			Assegno a{ fromResultset(res) };
-			assegniEmessi.push_back(a);
-		}
-	}
-	catch (const mariadb::exception::connection& exc)
-	{
-		TRACE(exc.what());
-	}
-	
-
-	con->disconnect();
+	std::string sql = createQuery(az);
+	std::vector<Assegno> assegniEmessi = execQuery(sql, az.getId());
 	return assegniEmessi;
 }
 
-std::vector<Assegno> AssegnoDao::getEmessi(const Azienda & az, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+std::vector<Assegno> AssegnoDao::getEmessi()
 {
-	std::vector<Assegno> assegniEmessi;
-	mydb::Connection conn;
-
-	auto con = conn.connect();
-	std::string sql = createQuery(az.getId(), annoDal, annoAl, meseDal, meseAl);
-
-	try
-	{
-		auto stmt = con->create_statement(sql.c_str());
-		stmt->set_unsigned32(0, az.getId());
-
-		if (annoDal > 0)
-		{
-			stmt->set_unsigned32(1, annoDal);
-
-			if (meseDal > 0 && meseDal <= 12)
-			{
-				stmt->set_unsigned32(2, meseDal);
-			}
-
-			if (annoAl > 0)
-			{
-				stmt->set_unsigned32(3, annoAl);
-
-				if (meseAl > 0 && meseAl <= 12)
-				{
-					stmt->set_unsigned32(4, meseAl);
-				}
-			}
-		}
-
-		auto res = stmt->query();
-
-		while (res->next())
-		{
-			Assegno a{ fromResultset(res) };
-			assegniEmessi.push_back(a);
-		}
-	}
-	catch (const mariadb::exception::connection& exc)
-	{
-		TRACE(exc.what());
-	}
-
-
-	con->disconnect();
+	std::string sql = createQuery();
+	std::vector<Assegno> assegniEmessi = execQuery(sql);
 	return assegniEmessi;
 }
 
-std::vector<Assegno> AssegnoDao::getEmessi(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+std::vector<Assegno> AssegnoDao::getEmessi(const ContoCorrente & cc)
 {
-	std::vector<Assegno> assegniEmessi;
-	mydb::Connection conn;
-
-	auto con = conn.connect();
-	std::string sql = createQuery(annoDal, annoAl, meseDal, meseAl);
-
-	try
-	{
-		auto stmt = con->create_statement(sql.c_str());
-		
-		if (annoDal > 0)
-		{
-			stmt->set_unsigned32(0, annoDal);
-
-			if (meseDal > 0 && meseDal <= 12)
-			{
-				stmt->set_unsigned32(1, meseDal);
-			}
-
-			if (annoAl > 0)
-			{
-				stmt->set_unsigned32(2, annoAl);
-
-				if (meseAl > 0 && meseAl <= 12)
-				{
-					stmt->set_unsigned32(3, meseAl);
-				}
-			}
-		}
-
-		auto res = stmt->query();
-
-		while (res->next())
-		{
-			Assegno a{ fromResultset(res) };
-			assegniEmessi.push_back(a);
-		}
-	}
-	catch (const mariadb::exception::connection& exc)
-	{
-		TRACE(exc.what());
-	}
-
-	con->disconnect();
-	return assegniEmessi;
-}
-
-std::vector<Assegno> AssegnoDao::getEmessi(const ContoCorrente & cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
-{
-	std::vector<Assegno> assegniEmessi;
-	mydb::Connection conn;
-
-	auto con = conn.connect();
-	std::string sql = createQuery(cc, annoDal, annoAl, meseDal, meseAl);
-
-	try
-	{
-		auto stmt = con->create_statement(sql.c_str());
-
-		stmt->set_unsigned32(0, cc.getId());
-
-		if (annoDal > 0)
-		{
-			stmt->set_unsigned32(1, annoDal);
-
-			if (meseDal > 0 && meseDal <= 12)
-			{
-				stmt->set_unsigned32(2, meseDal);
-			}
-
-			if (annoAl > 0)
-			{
-				stmt->set_unsigned32(3, annoAl);
-
-				if (meseAl > 0 && meseAl <= 12)
-				{
-					stmt->set_unsigned32(4, meseAl);
-				}
-			}
-		}
-
-		auto res = stmt->query();
-
-		while (res->next())
-		{
-			Assegno a{ fromResultset(res) };
-			assegniEmessi.push_back(a);
-		}
-	}
-	catch (const mariadb::exception::connection& exc)
-	{
-		TRACE(exc.what());
-	}
-
-	con->disconnect();
+	std::string sql = createQuery(cc);
+	std::vector<Assegno> assegniEmessi = execQuery(sql, cc.getId());
 	return assegniEmessi;
 }
 
@@ -306,79 +135,58 @@ void AssegnoDao::annulla(Assegno& assegno)
 	}
 }
 
-std::string AssegnoDao::createQuery(unsigned int idAzienda, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+std::string AssegnoDao::createQuery(const Azienda& az)
 {
-	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
-	sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
-	sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
-	sql += "INNER JOIN palmi.azienda az on az.id = cc.id_azienda ";
-	sql += "WHERE a.data_incasso IS NULL and a.data_emissione IS NOT NULL ";
-
-	if (idAzienda > 0)
-	{
-		sql += " and az.id = ? ";
-	}
-
-	if (annoDal > 0)
-	{
-		sql += " and (year(a.data_scadenza) >= ? ";
-
-		if (meseDal > 0 && meseDal <= 12)
-		{
-			sql += " and month(a.data_scadenza) >= ?";
-		}
-
-		sql += ")";
-
-		if (annoAl > 0)
-		{
-			sql += " and (year(a.data_scadenza) <= ? ";
-
-			if (meseAl > 0 && meseAl <= 12)
-			{
-				sql += " and month(a.data_scadenza) <= ?";
-			}
-
-			sql += ")";
-		}
-	}
-
+	std::string sql = createQuery();
+	sql += " and az.id = ? ";
 	return sql;
 }
 
-std::string AssegnoDao::createQuery(const ContoCorrente & cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal, unsigned short meseAl)
+std::string AssegnoDao::createQuery(const ContoCorrente & cc)
 {
-	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
-	sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
-	sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
-	sql += "WHERE a.data_incasso IS NULL and a.data_emissione IS NOT NULL ";
+	std::string sql = createQuery();
 	sql += "AND cc.id = ?";
+	return sql;
+}
 
-	if (annoDal > 0)
+std::vector<Assegno> AssegnoDao::execQuery(const std::string & query, const unsigned int id)
+{
+	mydb::Connection conn;
+	auto con = conn.connect();
+
+	std::vector<Assegno> assegniEmessi;
+	try
 	{
-		sql += " and (year(a.data_scadenza) >= ? ";
+		auto stmt = con->create_statement(query.c_str());
 
-		if (meseDal > 0 && meseDal <= 12)
+		if (id > 0)
 		{
-			sql += " and month(a.data_scadenza) >= ?";
+			stmt->set_unsigned32(0, id);
 		}
 
-		sql += ")";
+		auto res = stmt->query();
 
-		if (annoAl > 0)
+		while (res->next())
 		{
-			sql += " and (year(a.data_scadenza) <= ? ";
-
-			if (meseAl > 0 && meseAl <= 12)
-			{
-				sql += " and month(a.data_scadenza) <= ?";
-			}
-
-			sql += ")";
+			Assegno a{ fromResultset(res) };
+			assegniEmessi.push_back(a);
 		}
+
+		auto errnum = stmt->error_no();
+	}
+	catch (const mariadb::exception::connection& exc)
+	{
+		TRACE(exc.what());
 	}
 
-	return sql;
+	con->disconnect();
+	return assegniEmessi;
+}
+
+
+std::string AssegnoDao::createQuery()
+{
+	return std::string{ m_sql };
 }
 
 Assegno AssegnoDao::fromResultset(const mariadb::result_set_ref res)

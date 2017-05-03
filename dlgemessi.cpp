@@ -10,6 +10,7 @@
 #include "libdao.h"
 #include "ccdao.h"
 #include "azdao.h"
+#include "utils.h"
 
 DlgAssegniEmessi::DlgAssegniEmessi()
 	: CDialog{ IDD_ASSEGNIEMESSI }
@@ -30,6 +31,7 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 	AttachItem(IDC_CMBANNIEM2, m_cmbAnnoAl);
 	AttachItem(IDC_LISTASSEGNIEMESSI, m_listAssegni);
 	AttachItem(IDC_CMBBANCHEM, m_cmbConti);
+	AttachItem(IDC_TXTTOTALE, m_txtTotale);
 
 	m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
 	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 160);
@@ -77,38 +79,75 @@ void DlgAssegniEmessi::OnCerca()
 	services::Service service;
 	unsigned int annoDal = 0, meseDal = 0, annoAl = 0, meseAl = 0;
 
+	m_listAssegni.DeleteAllItems();
+	annoDal = m_cmbAnnoDal.GetSelectedItem();
+	meseDal = m_cmbMeseDal.GetSelectedItem();
+	annoAl = m_cmbAnnoAl.GetSelectedItem();
+	meseAl = m_cmbMeseAl.GetSelectedItem();
+	
 	try
 	{
-		//Azienda az = m_cmbAziende.GetSelectedItem();
-		//assegniEmessi = service.GetAssegniEmessi(az, annoDal, meseDal, annoAl, meseAl);
-
-		m_listAssegni.DeleteAllItems();
-		annoDal = m_cmbAnnoDal.GetSelectedItem();
-		meseDal = m_cmbMeseDal.GetSelectedItem();
-		annoAl = m_cmbAnnoAl.GetSelectedItem();
-		meseAl = m_cmbMeseAl.GetSelectedItem();
-
 		ContoCorrente cc = m_cmbConti.GetSelectedItem();
-		assegniEmessi = service.GetAssegniEmessi(cc, annoDal, meseDal, annoAl, meseAl);
+		assegniEmessi = service.GetAssegniEmessi(cc);
 	}
 	catch (const NotFoundException&)
 	{
-		// conto corrente non selezionato, cerco tutti gli assegni per date
-		assegniEmessi = service.GetAssegniEmessi(annoDal, meseDal, annoAl, meseAl);
+		// conto corrente non selezionato, cerco tutti gli assegni emessi
+		try
+		{
+			assegniEmessi = service.GetAssegniEmessi();
+		}
+		catch (const std::exception&)
+		{
+			MessageBox(_T("Errore"), _T("Eccezione 1"), MB_ICONEXCLAMATION);
+		}
+		
 	}
 	catch (const std::exception&)
 	{
-		MessageBox(_T("Errore"), _T("Eccezione"), MB_ICONEXCLAMATION);
+		MessageBox(_T("Errore"), _T("Eccezione 2"), MB_ICONEXCLAMATION);
 	}
 	
+	// filtro per data scadenza
+	if (meseDal == 0)
+		meseDal = 1;
+		
+	if (annoDal == 0)
+		annoDal = 2017;
+		
+	if (annoAl == 0)
+		annoAl = 3000;
+		
+	if (meseAl == 0)
+		meseAl = 12;
+		
+	unsigned int day = dtm::daysInMonth(meseAl, annoAl);
+	dtm::date dataDal{ 1, meseDal, annoDal };
+	dtm::date dataAl{ day, meseAl, annoAl };
+
+	assegniFiltrati.resize(assegniEmessi.size());
+	//vector<Assegno> filtered{ assegniEmessi.size() };
+	auto it = std::copy_if(assegniEmessi.begin(), assegniEmessi.end(), assegniFiltrati.begin(), [&](const Assegno& ass) {
+		return (ass.getDataScadenza() >= dataDal && ass.getDataScadenza() <= dataAl);
+	});
+	assegniFiltrati.erase(it, assegniFiltrati.end());
 
 	// ordino per data scadenza
-	std::sort(assegniEmessi.begin(), assegniEmessi.end(), [](const Assegno& a1, const Assegno& a2) { return a1.getDataScadenza() < a2.getDataScadenza(); });
+	std::sort(assegniFiltrati.begin(), assegniFiltrati.end(), [](const Assegno& a1, const Assegno& a2) { 
+		return a1.getDataScadenza() < a2.getDataScadenza(); });
 	
-	for (const auto& a : assegniEmessi)
+	for (const auto& a : assegniFiltrati)
 	{
 		Aggiungi(a);
 	}
+
+	// calcolo il totale
+	double tot = 0.0;
+	for each (const Assegno& ass in assegniFiltrati)
+	{
+		tot += ass.getImporto();
+	}
+	m_txtTotale.SetWindowTextW(utils::format(tot).c_str());
 }
 
 void DlgAssegniEmessi::OnDblClick(LPARAM lParam)

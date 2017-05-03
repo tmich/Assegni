@@ -26,6 +26,7 @@ private:
 	CComboMesi m_cmbMeseDal, m_cmbMeseAl;
 	CComboAnni m_cmbAnnoDal, m_cmbAnnoAl;
 	CListView m_listAssegni;
-	std::vector<Assegno> assegniEmessi;
+	std::vector<Assegno> assegniEmessi, assegniFiltrati;
+	CEdit m_txtTotale;
 };
 

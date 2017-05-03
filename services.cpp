@@ -1,28 +1,17 @@
 #include "stdafx.h"
 #include "services.h"
-#include "datetime.h"
 #include "assdao.h"
 
-vector<Assegno> services::Service::GetAssegniEmessi(const Azienda & azienda, unsigned int anno, unsigned short mese)
+vector<Assegno> services::Service::GetAssegniEmessi(const ContoCorrente & cc)
 {
 	AssegnoDao asdao;
-	return asdao.getEmessi(azienda, anno, mese);
+	auto assegni = asdao.getEmessi(cc);
+	return assegni;
 }
 
-vector<Assegno> services::Service::GetAssegniEmessi(const Azienda & azienda, unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl)
+vector<Assegno> services::Service::GetAssegniEmessi()
 {
 	AssegnoDao asdao;
-	return asdao.getEmessi(azienda, annoDal, annoAl, meseDal, meseAl);
-}
-
-vector<Assegno> services::Service::GetAssegniEmessi(const ContoCorrente& cc, unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl)
-{
-	AssegnoDao asdao;
-	return asdao.getEmessi(cc, annoDal, annoAl, meseDal, meseAl);
-}
-
-vector<Assegno> services::Service::GetAssegniEmessi(unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl)
-{
-	AssegnoDao asdao;
-	return asdao.getEmessi(annoDal, annoAl, meseDal, meseAl);
+	auto assegni = asdao.getEmessi();
+	return assegni;
 }

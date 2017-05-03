@@ -13,9 +13,7 @@ namespace services
 	class Service
 	{
 	public:
-		vector<Assegno> GetAssegniEmessi(const Azienda&, unsigned int anno, unsigned short mese);
-		vector<Assegno> GetAssegniEmessi(const Azienda&, unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl);
-		vector<Assegno> GetAssegniEmessi(const ContoCorrente&, unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl);
-		vector<Assegno> GetAssegniEmessi(unsigned int annoDal, unsigned short meseDal, unsigned int annoAl, unsigned short meseAl);
+		vector<Assegno> GetAssegniEmessi(const ContoCorrente&);
+		vector<Assegno> GetAssegniEmessi();
 	};
 }

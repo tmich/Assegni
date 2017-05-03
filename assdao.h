@@ -16,14 +16,20 @@ public:
 	Assegno getById(long id);
 	std::vector<Assegno> getByLibretto(long idLibretto);
 	//std::vector<Assegno> getByLibretto(const Libretto&);
-	std::vector<Assegno> getEmessi(const Azienda&, unsigned int anno, unsigned short mese=0);
-	std::vector<Assegno> getEmessi(const Azienda&, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal=0, unsigned short meseAl=0);
-	std::vector<Assegno> getEmessi(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
-	std::vector<Assegno> getEmessi(const ContoCorrente& cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
+	std::vector<Assegno> getEmessi(const Azienda&);
+	std::vector<Assegno> getEmessi();
+	std::vector<Assegno> getEmessi(const ContoCorrente& cc);
 	void salva(Assegno& assegno);
 	void annulla(Assegno& assegno);
 private:
-	std::string createQuery(unsigned int idAzienda, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
-	std::string createQuery(const ContoCorrente& cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
+	/*std::string createQuery(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
+	std::string createQuery(const Azienda& az, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
+	std::string createQuery(const ContoCorrente& cc, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);*/
+	std::string createQuery();
+	std::string createQuery(const Azienda& az);
+	std::string createQuery(const ContoCorrente& cc);
+
+	std::vector<Assegno> execQuery(const std::string& query, const unsigned int id = 0);
 	Assegno fromResultset(const mariadb::result_set_ref);
+	std::string m_sql;
 };
