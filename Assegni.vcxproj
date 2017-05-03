@@ -192,6 +192,7 @@
     <ClInclude Include="libdao.h" />
     <ClInclude Include="libretto.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="lvassegni.h" />
     <ClInclude Include="notfoundex.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="services.h" />
@@ -229,6 +230,7 @@
     <ClCompile Include="libdao.cpp" />
     <ClCompile Include="libretto.cpp" />
     <ClCompile Include="log.cpp" />
+    <ClCompile Include="lvassegni.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="services.cpp" />
     <ClCompile Include="settings.cpp" />

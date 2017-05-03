@@ -33,13 +33,13 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 	AttachItem(IDC_CMBBANCHEM, m_cmbConti);
 	AttachItem(IDC_TXTTOTALE, m_txtTotale);
 
-	m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
+	/*m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
 	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 160);
 	m_listAssegni.InsertColumn(2, _T("Intestato a"), 0, 300);
 	m_listAssegni.InsertColumn(3, _T("Importo"), 0, 100);
 	m_listAssegni.InsertColumn(4, _T("Libretto"), 0, 120);
 	m_listAssegni.InsertColumn(5, _T("Azienda"), 0, 120);
-	m_listAssegni.SetExtendedStyle(LVS_EX_FULLROWSELECT);
+	m_listAssegni.SetExtendedStyle(LVS_EX_FULLROWSELECT);*/
 
 	m_cmbConti.Aggiorna();
 
@@ -136,10 +136,7 @@ void DlgAssegniEmessi::OnCerca()
 	std::sort(assegniFiltrati.begin(), assegniFiltrati.end(), [](const Assegno& a1, const Assegno& a2) { 
 		return a1.getDataScadenza() < a2.getDataScadenza(); });
 	
-	for (const auto& a : assegniFiltrati)
-	{
-		Aggiungi(a);
-	}
+	m_listAssegni.SetItems(assegniFiltrati);
 
 	// calcolo il totale
 	double tot = 0.0;
@@ -168,65 +165,66 @@ void DlgAssegniEmessi::OnDblClick(LPARAM lParam)
 
 void DlgAssegniEmessi::Aggiungi(const Assegno & a)
 {
-	int i = m_listAssegni.GetItemCount();
-	std::wstring numero = a.getNumero();
-	std::wstring intest = a.getBeneficiario();
-	dtm::date dtEmess = a.getDataEmissione();
-	std::wstring importo = utils::format(a.getImporto());
-	std::wostringstream ss;
-	ss << std::setw(2) << std::setfill(_T('0')) << dtEmess.day() << _T('/')
-		<< std::setw(2) << std::setfill(_T('0')) << dtEmess.month() << _T('/')
-		<< dtEmess.year();
-	std::wstring dataEmissione = ss.str();
+	//int i = m_listAssegni.GetItemCount();
+	//std::wstring numero = a.getNumero();
+	//std::wstring intest = a.getBeneficiario();
+	//dtm::date dtEmess = a.getDataEmissione();
+	//std::wstring importo = utils::format(a.getImporto());
+	//std::wostringstream ss;
+	//ss << std::setw(2) << std::setfill(_T('0')) << dtEmess.day() << _T('/')
+	//	<< std::setw(2) << std::setfill(_T('0')) << dtEmess.month() << _T('/')
+	//	<< dtEmess.year();
+	//std::wstring dataEmissione = ss.str();
 
-	dtm::date dtScadenza = a.getDataScadenza();
-	std::wostringstream s2;
-	s2 << std::setw(2) << std::setfill(_T('0')) << dtScadenza.day() << _T('/')
-		<< std::setw(2) << std::setfill(_T('0')) << dtScadenza.month() << _T('/')
-		<< dtScadenza.year();
-	std::wstring dataScadenza = s2.str();
-	
-	LVITEM lv{ 0 };
+	//dtm::date dtScadenza = a.getDataScadenza();
+	//std::wostringstream s2;
+	//s2 << std::setw(2) << std::setfill(_T('0')) << dtScadenza.day() << _T('/')
+	//	<< std::setw(2) << std::setfill(_T('0')) << dtScadenza.month() << _T('/')
+	//	<< dtScadenza.year();
+	//std::wstring dataScadenza = s2.str();
+	//
+	//LVITEM lv{ 0 };
 
-	// data scadenza
-	lv.iItem = i;
-	lv.mask = LVFIF_TEXT;
-	lv.pszText = (LPWSTR)(dataScadenza.c_str());
-	m_listAssegni.InsertItem(lv);
+	//// data scadenza
+	//lv.iItem = i;
+	//lv.mask = LVFIF_TEXT;
+	//lv.pszText = (LPWSTR)(dataScadenza.c_str());
+	//m_listAssegni.InsertItem(lv);
 
-	// numero
-	lv.iSubItem = 1;
-	lv.pszText = (LPWSTR)numero.c_str();
-	m_listAssegni.SetItem(lv);
+	//// numero
+	//lv.iSubItem = 1;
+	//lv.pszText = (LPWSTR)numero.c_str();
+	//m_listAssegni.SetItem(lv);
 
-	// intestatario
-	lv.iSubItem = 2;
-	lv.pszText = (LPWSTR)intest.c_str();
-	m_listAssegni.SetItem(lv);
+	//// intestatario
+	//lv.iSubItem = 2;
+	//lv.pszText = (LPWSTR)intest.c_str();
+	//m_listAssegni.SetItem(lv);
 
-	// importo
-	lv.iSubItem = 3;
-	lv.pszText = (LPWSTR)importo.c_str();
-	m_listAssegni.SetItem(lv);
+	//// importo
+	//lv.iSubItem = 3;
+	//lv.pszText = (LPWSTR)importo.c_str();
+	//m_listAssegni.SetItem(lv);
 
-	// libretto
-	LibrettoDao libdao;
-	Libretto l = libdao.getById(a.getIdLibretto());
-	std::wstring codiceLibretto{ l.getCodice() };
-	lv.iSubItem = 4;
-	lv.pszText = (LPWSTR)(codiceLibretto.c_str());
-	m_listAssegni.SetItem(lv);
+	//// libretto
+	//LibrettoDao libdao;
+	//Libretto l = libdao.getById(a.getIdLibretto());
+	//std::wstring codiceLibretto{ l.getCodice() };
+	//lv.iSubItem = 4;
+	//lv.pszText = (LPWSTR)(codiceLibretto.c_str());
+	//m_listAssegni.SetItem(lv);
 
-	// assegno
-	AziendaDao azdao;
-	ContoCorrenteDao ccdao;
-	ContoCorrente cc = ccdao.GetById(l.getIdConto());
-	Azienda az;
-	azdao.getById(cc.getIdAzienda(), az);
-	lv.iSubItem = 5;
-	std::wstring azDenom{ az.getRagioneSociale() };
-	lv.pszText = (LPWSTR)(azDenom.c_str());
-	m_listAssegni.SetItem(lv);
+	//// assegno
+	//AziendaDao azdao;
+	//ContoCorrenteDao ccdao;
+	//ContoCorrente cc = ccdao.GetById(l.getIdConto());
+	//Azienda az;
+	//azdao.getById(cc.getIdAzienda(), az);
+	//lv.iSubItem = 5;
+	//std::wstring azDenom{ az.getRagioneSociale() };
+	//lv.pszText = (LPWSTR)(azDenom.c_str());
+	//m_listAssegni.SetItem(lv);
 
-	m_listAssegni.SetItemData(i, (DWORD_PTR)&a);
+	//m_listAssegni.SetItemData(i, (DWORD_PTR)&a);
+	m_listAssegni.Aggiungi(a);
 }

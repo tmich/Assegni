@@ -6,6 +6,7 @@
 #include "cmbmesi.h"
 #include "cmbanni.h"
 #include "assegno.h"
+#include "lvassegni.h"
 
 class DlgAssegniEmessi :
 	public CDialog
@@ -13,7 +14,7 @@ class DlgAssegniEmessi :
 public:
 	DlgAssegniEmessi();
 	virtual ~DlgAssegniEmessi();
-private:
+protected:
 	BOOL OnInitDialog() override;
 	BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	LRESULT OnNotify(WPARAM wParam, LPARAM lParam) override;
@@ -25,7 +26,7 @@ private:
 	CComboConti m_cmbConti;
 	CComboMesi m_cmbMeseDal, m_cmbMeseAl;
 	CComboAnni m_cmbAnnoDal, m_cmbAnnoAl;
-	CListView m_listAssegni;
+	ListViewAssegni m_listAssegni;
 	std::vector<Assegno> assegniEmessi, assegniFiltrati;
 	CEdit m_txtTotale;
 };
