@@ -129,6 +129,18 @@
     <ClInclude Include="lvassegni.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dlgFornitori.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fornitore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="forndao.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlgForn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -231,6 +243,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="lvassegni.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fornitore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="forndao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgFornitori.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgForn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -186,8 +186,12 @@
     <ClInclude Include="dlgconto.h" />
     <ClInclude Include="dlgemessi.h" />
     <ClInclude Include="dlgdettassegno.h" />
+    <ClInclude Include="dlgForn.h" />
+    <ClInclude Include="dlgFornitori.h" />
     <ClInclude Include="dlglibretto.h" />
     <ClInclude Include="dlgsettings.h" />
+    <ClInclude Include="forndao.h" />
+    <ClInclude Include="fornitore.h" />
     <ClInclude Include="ipaddress.h" />
     <ClInclude Include="libdao.h" />
     <ClInclude Include="libretto.h" />
@@ -224,8 +228,12 @@
     <ClCompile Include="dlgconto.cpp" />
     <ClCompile Include="dlgemessi.cpp" />
     <ClCompile Include="dlgdettassegno.cpp" />
+    <ClCompile Include="dlgForn.cpp" />
+    <ClCompile Include="dlgFornitori.cpp" />
     <ClCompile Include="dlglibretto.cpp" />
     <ClCompile Include="dlgsettings.cpp" />
+    <ClCompile Include="forndao.cpp" />
+    <ClCompile Include="fornitore.cpp" />
     <ClCompile Include="ipaddress.cpp" />
     <ClCompile Include="libdao.cpp" />
     <ClCompile Include="libretto.cpp" />

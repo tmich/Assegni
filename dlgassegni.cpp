@@ -7,6 +7,7 @@
 #include "dlgemessi.h"
 #include "dlgsettings.h"
 #include "dlgconto.h"
+#include "dlgFornitori.h"
 #include <wxx_gdi.h>
 #include <mariadb++\exceptions.hpp>
 #include <stdexcept>
@@ -34,6 +35,7 @@ BOOL DlgAssegni::OnInitDialog()
 	AttachItem(IDC_IMGLOGO, m_imgLogo);
 	AttachItem(IDC_BTNBANCHE, m_btnBanche);
 	AttachItem(IDC_BTNAZIENDE, m_btnAziende);
+	AttachItem(IDC_BTNFORNITORI, m_btnFornitori);
 
 	//Icona dei pulsanti
 	m_btnNuovoAssegno.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_PEN), IMAGE_ICON, 48, 48, LR_SHARED)));
@@ -106,6 +108,12 @@ BOOL DlgAssegni::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 		DlgAziende dlgAz;
 		dlgAz.DoModal(*this);
+		break;
+	}
+	case IDC_BTNFORNITORI:
+	{
+		DlgFornitori dlgForn;
+		dlgForn.DoModal(*this);
 		break;
 	}
 	}

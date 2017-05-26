@@ -12,6 +12,6 @@ private:
 	virtual void OnSettings();
 	virtual void OnConnectionException();
 	
-	CButton m_btnNuovoAssegno, m_btnNuovoLibretto, m_btnCercaAssegno, m_btnEmessi, m_btnBanche, m_btnAziende;
+	CButton m_btnNuovoAssegno, m_btnNuovoLibretto, m_btnCercaAssegno, m_btnEmessi, m_btnBanche, m_btnAziende, m_btnFornitori;
 	CStatic m_imgLogo;
 };
