@@ -11,6 +11,8 @@
 #include "ccdao.h"
 #include "azdao.h"
 #include "utils.h"
+#include <wxx_printdialogs.h>
+#include <wxx_rect.h>
 
 DlgAssegniEmessi::DlgAssegniEmessi()
 	: CDialog{ IDD_ASSEGNIEMESSI }
@@ -32,6 +34,7 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 	AttachItem(IDC_LISTASSEGNIEMESSI, m_listAssegni);
 	AttachItem(IDC_CMBBANCHEM, m_cmbConti);
 	AttachItem(IDC_TXTTOTALE, m_txtTotale);
+	AttachItem(IDC_BTNSTAMPA, m_btnStampa);
 
 	/*m_listAssegni.InsertColumn(0, _T("Scadenza"), 0, 120);
 	m_listAssegni.InsertColumn(1, _T("Numero"), 0, 160);
@@ -43,6 +46,9 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 
 	m_cmbConti.Aggiorna();
 
+	//OnCerca();
+	//this->SendDlgItemMessage(IDC_BTNCERCAEMESSI, BM_CLICK, 0, 0);
+
 	return 0;
 }
 
@@ -52,6 +58,9 @@ BOOL DlgAssegniEmessi::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 	case IDC_BTNCERCAEMESSI:
 		OnCerca();
+		break;
+	case IDC_BTNSTAMPA:
+		OnStampa();
 		break;
 	}
 	return 0;
@@ -69,6 +78,7 @@ LRESULT DlgAssegniEmessi::OnNotify(WPARAM wParam, LPARAM lParam)
 			OnDblClick(lParam);
 			break;
 		}
+		break;
 	}
 
 	return 0;
@@ -145,6 +155,45 @@ void DlgAssegniEmessi::OnCerca()
 		tot += ass.getImporto();
 	}
 	m_txtTotale.SetWindowTextW(utils::format(tot).c_str());
+}
+
+void DlgAssegniEmessi::OnStampa()
+{
+	// Copy the bitmap from the View window
+	/*CClientDC dcView(GetView());
+	CMemDC MemDC(dcView);
+	CBitmap bmView;
+	bmView.CreateCompatibleBitmap(dcView, Width, Height);
+	MemDC.SelectObject(bmView);
+	MemDC.BitBlt(0, 0, Width, Height, dcView, 0, 0, SRCCOPY);*/
+
+	CPrintDialog printDlg;
+	if (printDlg.DoModal(*this) == IDOK)
+	{
+		// Zero and then initialize the members of a DOCINFO structure.
+		DOCINFOW di = { 0 };
+		di.cbSize = sizeof(DOCINFO);
+		di.lpszDocName = _T("Assegni da incassare");
+		di.lpszOutput = (LPTSTR)NULL;
+		di.lpszDatatype = (LPTSTR)NULL;
+		di.fwType = 0;
+		CDC printerDC = printDlg.GetPrinterDC();
+		// Begin a print job by calling the StartDoc function.
+		printerDC.StartDocW(&di);
+		// Inform the driver that the application is about to begin sending data.
+		printerDC.StartPage();
+		//printerDC.Rectangle(100, 100, 200, 200);
+		int startY = 150;
+		for each (const Assegno& ass in assegniFiltrati)
+		{
+			printerDC.TextOutW(100, startY, ass.getBeneficiario().c_str());
+			startY += 100;
+			//tot += ass.getImporto();
+		}
+		
+		printerDC.EndPage();
+		printerDC.EndDoc();
+	}
 }
 
 void DlgAssegniEmessi::OnDblClick(LPARAM lParam)

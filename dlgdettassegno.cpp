@@ -32,7 +32,8 @@ BOOL DlgDettaglioAssegno::OnInitDialog()
 	AttachItem(IDC_CMBCC, m_cmbConti);
 	AttachItem(IDC_CMBLIBR, m_cmbLibretti);
 	AttachItem(IDC_CMBNUMASS, m_cmbAssegni);
-	AttachItem(IDC_TXTINTASS, m_txtIntAss);
+	//AttachItem(IDC_TXTINTASS, m_txtIntAss);
+	AttachItem(IDC_CMBFORN, m_txtIntAss);
 	AttachItem(IDC_TXTIMPASS, m_txtImpAss);
 	AttachItem(IDC_TXTDECIMPASS, m_txtImpDecAss);
 	AttachItem(IDC_TXTCAUSASS, m_txtCausAss);
@@ -192,9 +193,23 @@ void DlgDettaglioAssegno::OnSalva()
 		MessageBox(_T("Si è verificato un errore"), _T("Gestione assegni"), MB_ICONERROR);
 		EndDialog(IDCANCEL);
 	}
-	
 
-	EndDialog(IDOK);
+	PulisciCampi();
+
+	// ricarico l'assegno successivo
+	OnLibretto();
+
+	//EndDialog(IDOK);
+}
+
+LRESULT DlgDettaglioAssegno::PulisciCampi()
+{
+	m_txtCausAss.SetWindowTextW(L"");
+	m_txtIntAss.SetWindowTextW(L"");
+	m_txtImpAss.SetWindowTextW(L"");
+	m_txtImpDecAss.SetWindowTextW(L"");
+
+	return 0L;
 }
 
 LRESULT DlgDettaglioAssegno::OnColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -253,6 +268,7 @@ void DlgDettaglioAssegno::OnLibretto()
 		assegniNonEmessi.begin(), [=](Assegno a) { return !a.emesso(); });
 	assegniNonEmessi.resize(std::distance(assegniNonEmessi.begin(), it));	// shrink container to new size
 	m_cmbAssegni.Aggiorna(assegniNonEmessi);
+	m_txtIntAss.EnableWindow(true);
 }
 
 void DlgDettaglioAssegno::OnIncassato()
