@@ -97,6 +97,7 @@ void DlgAssegniEmessi::OnCerca()
 	meseDal = m_cmbMeseDal.GetSelectedItem();
 	annoAl = m_cmbAnnoAl.GetSelectedItem();
 	meseAl = m_cmbMeseAl.GetSelectedItem();
+	m_TotaleDaIncassare = 0.0;
 	
 	try
 	{
@@ -191,29 +192,40 @@ void DlgAssegniEmessi::OnStampa()
 		//printerDC.Rectangle(100, 100, 200, 200);
 		int startY = 150;
 		dtm::date oggi = dtm::date::date();
-		std::wostringstream titolo;
+		std::wostringstream titolo1, titolo;
+		if (m_cmbConti.GetCurSel() > 0)
+		{
+			titolo1 << L"Conto: " << m_cmbConti.GetSelectedItem().toString();
+		}
+		else
+		{
+			titolo1 << L"Tutti i conti";
+		}
+
 		titolo << L"Assegni da incassare al ";
 		titolo << oggi.day() << L"/" << oggi.month() << L"/" << oggi.year();
+		printerDC.TextOutW(100, startY, titolo1.str().c_str());
+		startY += 100;
 		printerDC.TextOutW(100, startY, titolo.str().c_str());
-		
+		startY += 100;
+
 		// linea
 		std::wostringstream linea;
 		for (int x = 0; x < 95; x++)
 		{
 			linea << L"_";
 		}
-		startY += 100;
-		/*CPoint ptBegin{ 100, startY };
-		CPoint ptEnd{ 4500,startY };*/
-		//printerDC.TextOutW(100, startY, linea.str().c_str());
-		// fine linea
-		
+
+		int cnt = 0;
 		startY += 100;
 		for each (const Assegno& ass in assegniFiltrati)
 		{
 			startY += 100;
 			std::wostringstream sb;
-			sb << "N° " << ass.getNumero() << " " << ass.getBeneficiario() << L" (" << ass.getNote() << L")";
+			dtm::date dtSc = ass.getDataScadenza();
+			std::wstringstream dataScadenza;
+			dataScadenza << dtSc.day() << L"/" << dtSc.month() << L"/" << dtSc.year();
+			sb << "N° " << ass.getNumero() << L" scad. " << dataScadenza.str() << L" " << ass.getBeneficiario();
 			printerDC.TextOutW(100, startY, sb.str().c_str());
 
 			int theX = 4500;
@@ -223,6 +235,15 @@ void DlgAssegniEmessi::OnStampa()
 			
 			startY += 85;
 			printerDC.TextOutW(100, startY, linea.str().c_str());
+			cnt++;
+
+			if (cnt == 35)
+			{
+				printerDC.EndPage();
+				printerDC.StartPage();
+				startY = 0;
+				cnt = 0;
+			}
 		}
 		
 		// totale
@@ -231,8 +252,11 @@ void DlgAssegniEmessi::OnStampa()
 		tot << L"TOTALE: ";
 		printerDC.TextOutW(100, startY, tot.str().c_str());
 		int theX = 4500;
-		if (m_TotaleDaIncassare > 999.99)
+		if (m_TotaleDaIncassare > 9999.99)
+			theX -= 104;
+		else if (m_TotaleDaIncassare > 999.99)
 			theX -= 52;
+		
 		printerDC.TextOutW(theX, startY, utils::format(m_TotaleDaIncassare).c_str());
 		
 		printerDC.EndPage();
