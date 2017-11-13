@@ -31,5 +31,6 @@ protected:
 	ListViewAssegni m_listAssegni;
 	std::vector<Assegno> assegniEmessi, assegniFiltrati;
 	CEdit m_txtTotale;
+	double m_TotaleDaIncassare;
 };
 

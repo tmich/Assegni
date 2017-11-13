@@ -17,6 +17,7 @@
 DlgAssegniEmessi::DlgAssegniEmessi()
 	: CDialog{ IDD_ASSEGNIEMESSI }
 {
+	m_TotaleDaIncassare = 0.0;
 }
 
 
@@ -43,6 +44,8 @@ BOOL DlgAssegniEmessi::OnInitDialog()
 	m_listAssegni.InsertColumn(4, _T("Libretto"), 0, 120);
 	m_listAssegni.InsertColumn(5, _T("Azienda"), 0, 120);
 	m_listAssegni.SetExtendedStyle(LVS_EX_FULLROWSELECT);*/
+
+	m_btnStampa.EnableWindow(FALSE);
 
 	m_cmbConti.Aggiorna();
 
@@ -149,12 +152,13 @@ void DlgAssegniEmessi::OnCerca()
 	m_listAssegni.SetItems(assegniFiltrati);
 
 	// calcolo il totale
-	double tot = 0.0;
 	for each (const Assegno& ass in assegniFiltrati)
 	{
-		tot += ass.getImporto();
+		m_TotaleDaIncassare += ass.getImporto();
 	}
-	m_txtTotale.SetWindowTextW(utils::format(tot).c_str());
+	m_txtTotale.SetWindowTextW(utils::format(m_TotaleDaIncassare).c_str());
+
+	m_btnStampa.EnableWindow(assegniFiltrati.size() > 0);
 }
 
 void DlgAssegniEmessi::OnStampa()
@@ -166,6 +170,8 @@ void DlgAssegniEmessi::OnStampa()
 	bmView.CreateCompatibleBitmap(dcView, Width, Height);
 	MemDC.SelectObject(bmView);
 	MemDC.BitBlt(0, 0, Width, Height, dcView, 0, 0, SRCCOPY);*/
+
+	const int CHARS_PER_LINE = 90;
 
 	CPrintDialog printDlg;
 	if (printDlg.DoModal(*this) == IDOK)
@@ -184,12 +190,50 @@ void DlgAssegniEmessi::OnStampa()
 		printerDC.StartPage();
 		//printerDC.Rectangle(100, 100, 200, 200);
 		int startY = 150;
+		dtm::date oggi = dtm::date::date();
+		std::wostringstream titolo;
+		titolo << L"Assegni da incassare al ";
+		titolo << oggi.day() << L"/" << oggi.month() << L"/" << oggi.year();
+		printerDC.TextOutW(100, startY, titolo.str().c_str());
+		
+		// linea
+		std::wostringstream linea;
+		for (int x = 0; x < 95; x++)
+		{
+			linea << L"_";
+		}
+		startY += 100;
+		/*CPoint ptBegin{ 100, startY };
+		CPoint ptEnd{ 4500,startY };*/
+		//printerDC.TextOutW(100, startY, linea.str().c_str());
+		// fine linea
+		
+		startY += 100;
 		for each (const Assegno& ass in assegniFiltrati)
 		{
-			printerDC.TextOutW(100, startY, ass.getBeneficiario().c_str());
 			startY += 100;
-			//tot += ass.getImporto();
+			std::wostringstream sb;
+			sb << "N° " << ass.getNumero() << " " << ass.getBeneficiario() << L" (" << ass.getNote() << L")";
+			printerDC.TextOutW(100, startY, sb.str().c_str());
+
+			int theX = 4500;
+			if (ass.getImporto() > 999.99)
+				theX -= 52;
+			printerDC.TextOutW(theX, startY, utils::format(ass.getImporto()).c_str());
+			
+			startY += 85;
+			printerDC.TextOutW(100, startY, linea.str().c_str());
 		}
+		
+		// totale
+		startY += 100;
+		std::wstringstream tot;
+		tot << L"TOTALE: ";
+		printerDC.TextOutW(100, startY, tot.str().c_str());
+		int theX = 4500;
+		if (m_TotaleDaIncassare > 999.99)
+			theX -= 52;
+		printerDC.TextOutW(theX, startY, utils::format(m_TotaleDaIncassare).c_str());
 		
 		printerDC.EndPage();
 		printerDC.EndDoc();
