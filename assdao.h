@@ -19,7 +19,10 @@ public:
 	std::vector<Assegno> getEmessi(const Azienda&);
 	std::vector<Assegno> getEmessi();
 	std::vector<Assegno> getEmessi(const ContoCorrente& cc);
+	std::vector<Assegno> getAnnullati();
+	// and annullato = 0
 	void salva(Assegno& assegno);
+	void annullaEmissione(Assegno& assegno);
 	void annulla(Assegno& assegno);
 private:
 	/*std::string createQuery(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);

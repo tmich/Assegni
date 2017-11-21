@@ -56,6 +56,16 @@ void Assegno::incassa(date dataIncasso)
 	mDataIncasso = dataIncasso;
 }
 
+void Assegno::annulla()
+{
+	mAnnullato = true;
+}
+
+bool Assegno::annullato() const
+{
+	return mAnnullato;
+}
+
 bool Assegno::emesso() const
 {
 	return mEmesso;

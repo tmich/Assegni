@@ -115,7 +115,7 @@ void DlgDettaglioAssegno::OnSalva()
 	{
 		try
 		{
-			asdao.annulla(apt);
+			asdao.annullaEmissione(apt);
 		}
 		catch (const std::exception&)
 		{

@@ -18,7 +18,9 @@ public:
 
 	void emetti(std::wstring beneficiario, date dataEmissione, date dataScadenza, double importo, std::wstring note);
 	void incassa(date dataIncasso);
+	void annulla();
 
+	bool annullato() const;
 	bool emesso() const;
 	bool incassato() const;
 	date getDataEmissione() const { return mDataEmissione; }
@@ -47,7 +49,7 @@ protected:
 	double mImporto;
 	date mDataIncasso;
 	std::wstring mNote;
-	bool mEmesso, mIncassato;
+	bool mEmesso, mIncassato, mAnnullato;
 };
 
 class AssegnoBuilder
