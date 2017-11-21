@@ -80,6 +80,10 @@ void DlgFornitori::Update()
 	FornitoreDao fdao;
 	m_fornitori = fdao.getAll();
 
+	// ordino per denominazione
+	std::sort(m_fornitori.begin(), m_fornitori.end(), [](const Fornitore& a1, const Fornitore& a2) {
+		return a1.getDenominazione() < a2.getDenominazione(); });
+
 	int i = 0;
 	for each (const auto& f in m_fornitori)
 	{
