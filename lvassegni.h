@@ -7,9 +7,10 @@ class ListViewAssegni : public CListView
 {
 public:
 	ListViewAssegni();
+	ListViewAssegni(std::vector<Assegno> items);
 	virtual ~ListViewAssegni();
 	void Aggiungi(const Assegno& a);
-	void Update() const;
+	void Update();
 	void ClearItems();
 	void SetItems(const std::vector<Assegno>& items);
 protected:

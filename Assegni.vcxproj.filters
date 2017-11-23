@@ -144,6 +144,12 @@
     <ClInclude Include="cmbfornitore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dlgannullati.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlgScegliLibretto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -261,6 +267,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cmbfornitore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgannullati.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgScegliLibretto.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

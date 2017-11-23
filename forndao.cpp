@@ -93,6 +93,18 @@ void FornitoreDao::salva(Fornitore& fornitore)
 	}
 }
 
+int FornitoreDao::elimina(long id)
+{
+	mydb::Connection conn;
+	auto con = conn.connect();
+	mariadb::statement_ref stmt;
+
+	stmt = con->create_statement("DELETE FROM palmi.fornitori WHERE id=?");
+	stmt->set_unsigned32(0, id);
+
+	return stmt->execute();
+}
+
 Fornitore FornitoreDao::fromResultset(const mariadb::result_set_ref res)
 {
 	long id = res->get_unsigned32("id");

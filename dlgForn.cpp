@@ -29,7 +29,10 @@ BOOL DlgFornitore::OnInitDialog()
 	AttachItem(IDC_TXTTELFORN, m_txtTel);
 	AttachItem(IDC_TXTINDIRFORN, m_txtIndirizzo);
 	AttachItem(IDC_TXTPIVAFORN, m_txtPiva);
+	AttachItem(IDC_BTNELIMINAFORN, m_btnElimina);
 	m_txtId.SetWindowTextW(_T(""));
+
+	m_btnElimina.EnableWindow(m_IdForn > 0);
 
 	if (m_IdForn > 0)
 	{
@@ -56,6 +59,9 @@ BOOL DlgFornitore::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 	case IDC_BTNSALVAFORN:
 		OnSalva();
+		break;
+	case IDC_BTNELIMINAFORN:
+		OnElimina();
 		break;
 	}
 	return 0;
@@ -92,5 +98,19 @@ void DlgFornitore::OnSalva()
 		fornDao.salva(f);
 		MessageBox(_T("Salvataggio effettuato"), _T("Ok"), MB_ICONINFORMATION);
 		EndDialog(IDOK);
+	}
+}
+
+void DlgFornitore::OnElimina()
+{
+	if (MessageBox(_T("Eliminare questo fornitore? "), _T("Conferma"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
+	{
+		FornitoreDao fornDao;
+		//Fornitore f = fornDao.getById(m_IdForn);
+		if (fornDao.elimina(m_IdForn) == 1)
+		{
+			MessageBox(_T("Operazione completata"), _T("Ok"), MB_ICONINFORMATION);
+			EndDialog(IDOK);
+		}
 	}
 }

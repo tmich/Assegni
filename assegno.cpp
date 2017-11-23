@@ -2,15 +2,24 @@
 #include "assegno.h"
 #include <stdexcept>
 
-Assegno::Assegno(std::wstring numero)
-	:mNumero(numero), mEmesso(false), mIncassato(false)
+Assegno::Assegno()
+	: mEmesso(false), mIncassato(false), mAnnullato(false)
 {
 }
 
-Assegno::Assegno(std::wstring numero, std::wstring beneficiario, date dataEmissione, double importo, std::wstring note)
-	: mNumero(numero), mBeneficiario(beneficiario), mDataEmissione(dataEmissione)
-	, mImporto(importo), mNote(note), mEmesso(true), mIncassato(false)
+Assegno::Assegno(std::wstring numero)
+	: Assegno()
 {
+	mNumero = numero;
+}
+
+Assegno::Assegno(std::wstring numero, std::wstring beneficiario, date dataEmissione, double importo, std::wstring note)
+	: Assegno{ numero }
+{
+	mBeneficiario = beneficiario;
+	mDataEmissione = dataEmissione;
+	mImporto = importo;
+	mNote = note;
 }
 
 Assegno::Assegno(std::wstring numero, std::wstring beneficiario, date dataEmissione, double importo, std::wstring note, date dataIncasso)

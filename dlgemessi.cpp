@@ -91,6 +91,7 @@ void DlgAssegniEmessi::OnCerca()
 {
 	services::Service service;
 	unsigned int annoDal = 0, meseDal = 0, annoAl = 0, meseAl = 0;
+	m_TotaleDaIncassare = 0;
 
 	m_listAssegni.DeleteAllItems();
 	annoDal = m_cmbAnnoDal.GetSelectedItem();
@@ -150,6 +151,7 @@ void DlgAssegniEmessi::OnCerca()
 		return a1.getDataScadenza() < a2.getDataScadenza(); });
 	
 	m_listAssegni.SetItems(assegniFiltrati);
+	m_listAssegni.Update();
 
 	// calcolo il totale
 	for each (const Assegno& ass in assegniFiltrati)

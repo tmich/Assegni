@@ -93,6 +93,31 @@ Libretto LibrettoDao::insert(long id_conto, std::wstring numero, std::wstring co
 	return lib;
 }
 
+int LibrettoDao::elimina(long idLibretto)
+{
+	auto res = eliminaAssegni(idLibretto);
+
+	mydb::Connection conn;
+	auto con = conn.connect();
+	auto stmt = con->create_statement(R"(DELETE FROM palmi.libretto_assegni WHERE id = ?)");
+	stmt->set_unsigned32(0, idLibretto);
+	res = stmt->execute();
+	con->disconnect();
+
+	return res;
+}
+
+int LibrettoDao::eliminaAssegni(long idLibretto)
+{
+	mydb::Connection conn;
+	auto con = conn.connect();
+	auto stmt = con->create_statement(R"(DELETE FROM palmi.assegno WHERE id_libretto = ?)");
+	stmt->set_unsigned32(0, idLibretto);
+	auto res = stmt->execute();
+	con->disconnect();
+	return res;
+}
+
 Libretto LibrettoDao::fromResultset(const mariadb::result_set_ref res)
 {
 	// id, numero, codice, qta, note

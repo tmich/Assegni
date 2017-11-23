@@ -10,6 +10,11 @@ ListViewAssegni::ListViewAssegni()
 {
 }
 
+ListViewAssegni::ListViewAssegni(std::vector<Assegno> items)
+	: m_assegni{ items }
+{
+}
+
 ListViewAssegni::~ListViewAssegni()
 {
 }
@@ -19,7 +24,7 @@ void ListViewAssegni::Aggiungi(const Assegno & a)
 	m_assegni.push_back(a);
 }
 
-void ListViewAssegni::Update() const
+void ListViewAssegni::Update()
 {
 	for each (const auto& a in m_assegni)
 	{
@@ -97,7 +102,7 @@ void ListViewAssegni::SetItems(const std::vector<Assegno>& items)
 	ClearItems();
 	m_assegni.resize(items.size());
 	std::copy(items.cbegin(), items.cend(), m_assegni.begin());
-	Update();
+	//Update();
 }
 
 void ListViewAssegni::OnInitialUpdate()
@@ -109,4 +114,6 @@ void ListViewAssegni::OnInitialUpdate()
 	InsertColumn(4, _T("Libretto"), 0, 120);
 	InsertColumn(5, _T("Azienda"), 0, 120);
 	SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+	Update();
 }

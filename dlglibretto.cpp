@@ -20,7 +20,7 @@ DlgLibretto::DlgLibretto(long idLibretto)
 	: DlgLibretto()
 {
 	m_idLibretto = idLibretto;
-	m_readOnly = true;
+	//m_readOnly = true;
 }
 
 DlgLibretto::~DlgLibretto()
@@ -129,13 +129,16 @@ void DlgLibretto::DatiLibretto()
 
 	ContoCorrenteDao ccdao;
 	ContoCorrente cc = ccdao.GetById(lib.getIdConto());
-	m_cmbConti.AddString(cc.toString().c_str());
-	m_cmbConti.SetCurSel(0);
+	//m_cmbConti.AddString(cc.toString().c_str());
+	//m_cmbConti.SetCurSel(0);
 
 	AziendaDao azdao;
 	Azienda az;
 	azdao.getById(cc.getIdAzienda(), az);
 	m_cmbAziende.SetSelectedItem(az, true);
+	m_cmbConti.Aggiorna(az);
+	int sel = m_cmbConti.FindStringExact(0, cc.toString().c_str());
+	m_cmbConti.SetCurSel(sel);
 
 	AssegnoDao asdao;
 	std::vector<Assegno> assegni = asdao.getByLibretto(lib.getId());
@@ -146,14 +149,17 @@ void DlgLibretto::DatiLibretto()
 	}
 
 	// disabilito tutto
-	m_txtLibretto.EnableWindow(false);
-	m_txtCodice.EnableWindow(false);
+	m_cmbConti.EnableWindow(FALSE);
+	//m_txtLibretto.EnableWindow(false);
+	//m_txtAssegno.EnableWindow(true);
+	//m_txtCodice.EnableWindow(false);
 	::SendDlgItemMessage(*this, IDC_RB20, BM_SETCHECK, BST_UNCHECKED, 0);
 	::SendDlgItemMessage(*this, (lib.getQta() == 20 ? IDC_RB20 : IDC_RB10), BM_SETCHECK, BST_CHECKED, 0);
-	m_rbQta20.EnableWindow(false);
-	m_rbQta10.EnableWindow(false);
-	m_btnCalcolaNumeri.EnableWindow(false);
-	::EnableWindow(::GetDlgItem(*this, IDC_BTNSALVALIB), FALSE);
+	//m_rbQta20.EnableWindow(false);
+	//m_rbQta10.EnableWindow(false);
+	//m_btnCalcolaNumeri.EnableWindow(false);
+	//::EnableWindow(::GetDlgItem(*this, IDC_BTNSALVALIB), FALSE);
+	//m_cmbAziende.EnableWindow(FALSE);
 }
 
 void DlgLibretto::OnAzienda()
@@ -173,6 +179,11 @@ void DlgLibretto::OnCalcolaNumeri()
 	for (const auto& n : numeri)
 	{
 		m_lstAssegni.AddString(n.c_str());
+	}
+
+	if (m_idLibretto > 0)
+	{
+		m_ricalcolato = true;
 	}
 }
 
@@ -203,6 +214,19 @@ void DlgLibretto::Salva()
 	boost::trim(nLib);
 
 	LibrettoDao libdao;
+
+	if (m_idLibretto > 0)
+	{
+		if (m_ricalcolato)
+		{
+			if (MessageBox(_T("Attenzione, gli assegni già presenti per questo libretto saranno eliminati. Proseguire?")
+				, _T("Conferma"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
+			{
+				libdao.elimina(m_idLibretto);
+			}
+		}
+	}
+
 	Libretto l = libdao.insert(id_conto, nLib, codLib, m_qta, assegni);
 	::MessageBox(*this, _T("Salvato"), _T("Ok"), MB_ICONINFORMATION);
 }

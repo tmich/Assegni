@@ -15,6 +15,7 @@ public:
 	std::vector<Fornitore> getAll();
 	
 	void salva(Fornitore& fornitore);
+	int elimina(long id);
 	/*void annulla(Fornitore& fornitore);*/
 private:
 	/*std::string createQuery();

@@ -15,5 +15,6 @@ namespace services
 	public:
 		vector<Assegno> GetAssegniEmessi(const ContoCorrente&);
 		vector<Assegno> GetAssegniEmessi();
+		vector<Assegno> GetAssegniAnnullati();
 	};
 }

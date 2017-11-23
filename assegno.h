@@ -10,7 +10,7 @@ public:
 	friend class AssegnoDao;
 	friend class AssegnoBuilder;
 
-	Assegno() {}
+	Assegno();
 	Assegno(std::wstring numero);
 	Assegno(std::wstring numero, std::wstring beneficiario, date dataEmissione, double importo, std::wstring note);
 	Assegno(std::wstring numero, std::wstring beneficiario, date dataEmissione, double importo, std::wstring note, date dataIncasso);

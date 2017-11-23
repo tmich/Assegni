@@ -7,7 +7,7 @@
 
 AssegnoDao::AssegnoDao()
 {
-	m_sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note ";
+	m_sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note,a.annullato ";
 	m_sql += "FROM palmi.assegno a INNER JOIN palmi.libretto_assegni lib ON lib.id = a.id_libretto  ";
 	m_sql += "INNER JOIN palmi.conto_corrente cc on cc.id = lib.id_conto_corrente ";
 	m_sql += "INNER JOIN palmi.azienda az on az.id = cc.id_azienda ";
@@ -24,7 +24,7 @@ Assegno AssegnoDao::getById(long id)
 
 	auto con = conn.connect();
 	auto stmt = con->create_statement(R"(SELECT id, id_libretto, numero, data_emissione, data_scadenza,
-		beneficiario, importo, data_incasso, note FROM palmi.assegno where id = ?)");
+		beneficiario, importo, data_incasso, note, annullato FROM palmi.assegno where id = ?)");
 	stmt->set_unsigned32(0, id);
 	auto res = stmt->query();
 
@@ -45,7 +45,7 @@ std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 
 	auto con = conn.connect();
 	auto stmt = con->create_statement(R"(SELECT id, id_libretto, numero, data_emissione, data_scadenza,
-		beneficiario, importo, data_incasso, note FROM palmi.assegno where id_libretto = ? AND annullato = 1)");
+		beneficiario, importo, data_incasso, note FROM palmi.assegno where id_libretto = ? AND annullato = 0)");
 	stmt->set_unsigned32(0, idLibretto);
 	auto res = stmt->query();
 
@@ -61,7 +61,7 @@ std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az)
 {
 	std::string sql = createQuery(az);
-	sql += " AND annullato = 1;";
+	sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql, az.getId());
 	return assegniEmessi;
 }
@@ -69,7 +69,7 @@ std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az)
 std::vector<Assegno> AssegnoDao::getEmessi()
 {
 	std::string sql = createQuery();
-	sql += " AND annullato = 1;";
+	sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql);
 	return assegniEmessi;
 }
@@ -77,7 +77,7 @@ std::vector<Assegno> AssegnoDao::getEmessi()
 std::vector<Assegno> AssegnoDao::getEmessi(const ContoCorrente & cc)
 {
 	std::string sql = createQuery(cc);
-	sql += " AND annullato = 1;";
+	sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql, cc.getId());
 	return assegniEmessi;
 }
@@ -119,8 +119,8 @@ void AssegnoDao::salva(Assegno & assegno)
 			stmt->set_wstring(4, assegno.getNote());
 			dtm::date dtScad = assegno.getDataScadenza();
 			stmt->set_date(5, mariadb::date_time{ dtScad.year(), dtScad.month(), dtScad.day() });
-			stmt->set_unsigned32(6, assegno.getId());
-			stmt->set_unsigned32(7, (assegno.annullato() ? 1 : 0));
+			stmt->set_unsigned32(6, (assegno.annullato() ? 1 : 0));
+			stmt->set_unsigned32(7, assegno.getId());
 		}
 		
 		auto ret = stmt->execute();
@@ -225,9 +225,13 @@ Assegno AssegnoDao::fromResultset(const mariadb::result_set_ref res)
 	long id = res->get_unsigned32("id");
 	long idLibretto = res->get_unsigned32("id_libretto");
 	std::wstring numero = res->get_wstring("numero");
+	//short annullato = res->get_unsigned8("annullato");
+	//bool annullato = res->get_boolean("annullato");
+
 	Assegno ass{ numero };
 	ass.mId = id;
 	ass.setIdLibretto(idLibretto);
+	//ass.mAnnullato = (annullato == 1);
 
 	if (!res->is_null("data_emissione"))
 	{
@@ -242,7 +246,6 @@ Assegno AssegnoDao::fromResultset(const mariadb::result_set_ref res)
 		{
 			note = res->get_wstring("note");
 		}
-
 		ass.emetti(beneficiario, dt_em, dt_sc, importo, note);
 	}
 	
@@ -251,6 +254,11 @@ Assegno AssegnoDao::fromResultset(const mariadb::result_set_ref res)
 		mariadb::date_time data_incasso = res->get_date_time("data_incasso");
 		dtm::date dt_inc{ data_incasso.day(), data_incasso.month(), data_incasso.year() };
 		ass.incassa(dt_inc);
+	}
+
+	if (res->get_unsigned8("annullato") == 1)
+	{
+		ass.annulla();
 	}
 
 	return ass;

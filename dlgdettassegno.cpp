@@ -43,10 +43,13 @@ BOOL DlgDettaglioAssegno::OnInitDialog()
 	AttachItem(IDC_CHKINCASS, m_chkIncasso);
 	AttachItem(IDC_DTSCAD, m_dtScadenza);
 	AttachItem(IDC_BTNSBLOCCA, m_btnSblocca);
+	AttachItem(IDC_BTNANNULLASS, m_btnAnnullaAss);
 
 	m_txtImpAss.SetLimitText(7);
 	m_txtImpDecAss.SetLimitText(2);
 	m_dtIncass.SetWindowTextW(_T(""));
+
+	m_btnAnnullaAss.EnableWindow(m_idAssegno > 0);
 	
 	::SendDlgItemMessage(*this, IDC_CHKINCASS, BM_SETCHECK, (m_incassato ? BST_CHECKED : BST_UNCHECKED), 0);
 	m_dtIncass.EnableWindow(m_incassato);
@@ -93,6 +96,9 @@ BOOL DlgDettaglioAssegno::OnCommand(WPARAM wParam, LPARAM lParam)
 		break;
 	case IDC_BTNSBLOCCA:
 		OnBloccaSblocca();
+		break;
+	case IDC_BTNANNULLASS:
+		OnAnnulla();
 		break;
 	}
 	return 0;
@@ -397,4 +403,18 @@ void DlgDettaglioAssegno::OnBloccaSblocca()
 	m_txtImpAss.EnableWindow(m_sbloccato);
 	m_txtImpDecAss.EnableWindow(m_sbloccato);
 	m_btnSalvAss.EnableWindow(m_sbloccato);
+}
+
+void DlgDettaglioAssegno::OnAnnulla()
+{
+	if (MessageBox(_T("Annullare l'assegno?"), _T("Attenzione"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
+	{
+		AssegnoDao asdao;
+		Assegno apt = m_cmbAssegni.GetSelectedItem();
+		apt.annulla();
+		asdao.salva(apt);
+		MessageBox(_T("Assegno annullato"), _T("Conferma"), MB_ICONINFORMATION);
+		//::SendMessage(*this, WM_CLOSE, 0, 0);
+		EndDialog(IDOK);
+	}
 }

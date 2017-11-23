@@ -15,3 +15,10 @@ vector<Assegno> services::Service::GetAssegniEmessi()
 	auto assegni = asdao.getEmessi();
 	return assegni;
 }
+
+vector<Assegno> services::Service::GetAssegniAnnullati()
+{
+	AssegnoDao asdao;
+	auto assegni = asdao.getAnnullati();
+	return assegni;
+}

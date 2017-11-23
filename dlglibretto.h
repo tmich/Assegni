@@ -14,6 +14,7 @@ private:
 	virtual BOOL OnInitDialog() override;
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
 	virtual void OnOK() override;
+	//virtual LRESULT OnNotify(WPARAM wParam, LPARAM lParam) override;
 	virtual void DatiLibretto();
 	void OnAzienda();
 	void OnCalcolaNumeri();
@@ -27,5 +28,5 @@ private:
 	CListBox m_lstAssegni;
 	int m_qta;
 	long m_idLibretto;
-	bool m_readOnly;
+	bool m_readOnly, m_ricalcolato;
 };
