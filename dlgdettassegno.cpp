@@ -312,7 +312,8 @@ void DlgDettaglioAssegno::DatiAssegno()
 	azdao.getById(cc.getIdAzienda(), az);
 	m_cmbAzienda.SetSelectedItem(az, true);
 
-	m_txtIntAss.SetWindowTextW(assegno.getBeneficiario().c_str());
+	m_txtIntAss.AddString(assegno.getBeneficiario().c_str());
+	m_txtIntAss.SetCurSel(0);
 	m_txtIntAss.EnableWindow(false);
 
 	// data emissione, data incasso
