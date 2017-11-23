@@ -23,7 +23,8 @@ public:
 	// and annullato = 0
 	void salva(Assegno& assegno);
 	void annullaEmissione(Assegno& assegno);
-	void annulla(Assegno& assegno);
+	int annulla(Assegno& assegno);
+	int azzera(Assegno& assegno);
 private:
 	/*std::string createQuery(unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);
 	std::string createQuery(const Azienda& az, unsigned int annoDal, unsigned int annoAl, unsigned short meseDal = 0, unsigned short meseAl = 0);

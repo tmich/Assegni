@@ -143,7 +143,7 @@ void DlgAssegniEmessi::OnCerca()
 	assegniFiltrati.resize(assegniEmessi.size());
 	//vector<Assegno> filtered{ assegniEmessi.size() };
 	auto it = std::copy_if(assegniEmessi.begin(), assegniEmessi.end(), assegniFiltrati.begin(), [&](const Assegno& ass) {
-		return (ass.getDataScadenza() >= dataDal && ass.getDataScadenza() <= dataAl);
+		return (ass.getDataScadenza() >= dataDal && ass.getDataScadenza() <= dataAl && ass.annullato() == false);
 	});
 	assegniFiltrati.erase(it, assegniFiltrati.end());
 

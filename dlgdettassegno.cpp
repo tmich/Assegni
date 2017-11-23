@@ -43,13 +43,15 @@ BOOL DlgDettaglioAssegno::OnInitDialog()
 	AttachItem(IDC_CHKINCASS, m_chkIncasso);
 	AttachItem(IDC_DTSCAD, m_dtScadenza);
 	AttachItem(IDC_BTNSBLOCCA, m_btnSblocca);
-	AttachItem(IDC_BTNANNULLASS, m_btnAnnullaAss);
-
+	AttachItem(IDC_BTNANNULLASS, m_btnAzzera);
+	AttachItem(IDC_BTNANNULLADEF, m_btnAnnulla);
+	
 	m_txtImpAss.SetLimitText(7);
 	m_txtImpDecAss.SetLimitText(2);
 	m_dtIncass.SetWindowTextW(_T(""));
 
-	m_btnAnnullaAss.EnableWindow(m_idAssegno > 0);
+	m_btnAzzera.EnableWindow(m_idAssegno > 0);
+	m_btnAnnulla.EnableWindow(m_idAssegno > 0);
 	
 	::SendDlgItemMessage(*this, IDC_CHKINCASS, BM_SETCHECK, (m_incassato ? BST_CHECKED : BST_UNCHECKED), 0);
 	m_dtIncass.EnableWindow(m_incassato);
@@ -98,7 +100,10 @@ BOOL DlgDettaglioAssegno::OnCommand(WPARAM wParam, LPARAM lParam)
 		OnBloccaSblocca();
 		break;
 	case IDC_BTNANNULLASS:
-		OnAnnulla();
+		OnAzzera();
+		break;
+	case IDC_BTNANNULLADEF:
+		OnAnnullaDefinitivamente();
 		break;
 	}
 	return 0;
@@ -292,6 +297,8 @@ void DlgDettaglioAssegno::DatiAssegno()
 	m_cmbAssegni.Aggiorna(vAssegno);
 	m_cmbAssegni.SetCurSel(0);
 	m_cmbAssegni.EnableWindow(false);
+
+	m_btnAnnulla.EnableWindow(!assegno.annullato());
 	
 	std::wstring title{ _T("Assegno n° ") };
 	title.append(assegno.getNumero());
@@ -359,7 +366,7 @@ void DlgDettaglioAssegno::DatiAssegno()
 
 	// pulsante per sbloccare la modifica di un assegno emesso
 	m_btnSblocca.SetIcon((HICON)(::LoadImage(GetApp().GetResourceHandle(), MAKEINTRESOURCE(IDI_LOCK), IMAGE_ICON, 48, 48, LR_SHARED)));
-	m_btnSblocca.EnableWindow(true);
+	//m_btnSblocca.EnableWindow(true);
 
 	// incassato?
 	m_incassato = assegno.incassato();
@@ -406,16 +413,29 @@ void DlgDettaglioAssegno::OnBloccaSblocca()
 	m_btnSalvAss.EnableWindow(m_sbloccato);
 }
 
-void DlgDettaglioAssegno::OnAnnulla()
+void DlgDettaglioAssegno::OnAzzera()
+{
+	if (MessageBox(_T("Cancellare i dati?"), _T("Attenzione"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
+	{
+		AssegnoDao asdao;
+		Assegno apt = m_cmbAssegni.GetSelectedItem();
+		asdao.azzera(apt);
+		//DatiAssegno();
+		//asdao.salva(apt);
+		MessageBox(_T("Dati cancellati"), _T("OK"), MB_ICONINFORMATION);
+		//::SendMessage(*this, WM_CLOSE, 0, 0);
+		EndDialog(IDOK);
+	}
+}
+
+void DlgDettaglioAssegno::OnAnnullaDefinitivamente()
 {
 	if (MessageBox(_T("Annullare l'assegno?"), _T("Attenzione"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
 	{
 		AssegnoDao asdao;
 		Assegno apt = m_cmbAssegni.GetSelectedItem();
-		apt.annulla();
-		asdao.salva(apt);
+		asdao.annulla(apt);
 		MessageBox(_T("Assegno annullato"), _T("Conferma"), MB_ICONINFORMATION);
-		//::SendMessage(*this, WM_CLOSE, 0, 0);
 		EndDialog(IDOK);
 	}
 }

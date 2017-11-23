@@ -31,7 +31,8 @@ private:
 	void OnIncassato();
 	void DatiAssegno();
 	void OnBloccaSblocca();
-	void OnAnnulla();
+	void OnAzzera();
+	void OnAnnullaDefinitivamente();
 
 	CComboAziende m_cmbAzienda;
 	CComboConti m_cmbConti;
@@ -41,7 +42,7 @@ private:
 	// CEdit m_txtIntAss;
 	CComboFornitore m_txtIntAss;
 	CDateTime m_dtAss, m_dtIncass, m_dtScadenza;
-	CButton m_btnSalvAss, m_chkIncasso, m_btnSblocca, m_btnAnnullaAss;
+	CButton m_btnSalvAss, m_chkIncasso, m_btnSblocca, m_btnAzzera, m_btnAnnulla;
 	bool m_incassato, m_sbloccato;
 	long m_idAssegno;
 	std::vector<Assegno> vAssegno;

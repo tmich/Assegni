@@ -45,7 +45,7 @@ std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 
 	auto con = conn.connect();
 	auto stmt = con->create_statement(R"(SELECT id, id_libretto, numero, data_emissione, data_scadenza,
-		beneficiario, importo, data_incasso, note FROM palmi.assegno where id_libretto = ? AND annullato = 0)");
+		beneficiario, importo, data_incasso, note FROM palmi.assegno where id_libretto = ?)");
 	stmt->set_unsigned32(0, idLibretto);
 	auto res = stmt->query();
 
@@ -61,7 +61,7 @@ std::vector<Assegno> AssegnoDao::getByLibretto(long idLibretto)
 std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az)
 {
 	std::string sql = createQuery(az);
-	sql += " AND annullato = 0;";
+	//sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql, az.getId());
 	return assegniEmessi;
 }
@@ -69,7 +69,7 @@ std::vector<Assegno> AssegnoDao::getEmessi(const Azienda &az)
 std::vector<Assegno> AssegnoDao::getEmessi()
 {
 	std::string sql = createQuery();
-	sql += " AND annullato = 0;";
+	//sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql);
 	return assegniEmessi;
 }
@@ -77,15 +77,15 @@ std::vector<Assegno> AssegnoDao::getEmessi()
 std::vector<Assegno> AssegnoDao::getEmessi(const ContoCorrente & cc)
 {
 	std::string sql = createQuery(cc);
-	sql += " AND annullato = 0;";
+	//sql += " AND annullato = 0;";
 	std::vector<Assegno> assegniEmessi = execQuery(sql, cc.getId());
 	return assegniEmessi;
 }
 
 std::vector<Assegno> AssegnoDao::getAnnullati()
 {
-	std::string sql = createQuery();
-	sql += " AND annullato = 1;";
+	std::string sql = "SELECT a.id,a.id_libretto,a.numero,a.data_emissione,a.data_scadenza,a.beneficiario,a.importo,a.data_incasso,a.note,a.annullato ";
+	sql += " from palmi.assegno a where annullato=1;";
 	std::vector<Assegno> assegniAnnullati = execQuery(sql);
 	return assegniAnnullati;
 }
@@ -147,7 +147,7 @@ void AssegnoDao::annullaEmissione(Assegno& assegno)
 	}
 }
 
-void AssegnoDao::annulla(Assegno & assegno)
+int AssegnoDao::annulla(Assegno & assegno)
 {
 	mydb::Connection conn;
 	auto con = conn.connect();
@@ -155,15 +155,43 @@ void AssegnoDao::annulla(Assegno & assegno)
 	if (assegno.getId() > 0)
 	{
 		mariadb::statement_ref stmt;
-		stmt = con->create_statement(R"(UPDATE palmi.assegno set annullato=1 WHERE id=?)");
+		stmt = con->create_statement(R"(update palmi.assegno set annullato = 1 WHERE id=?)");
 		stmt->set_unsigned32(0, assegno.getId());
 		auto ret = stmt->execute();
 
-		if (ret == 1)
+		/*if (ret == 1)
 		{
-			assegno.annulla();
-		}
+			mariadb::statement_ref stmt2;
+			stmt2 = con->create_statement(R"(update palmi.assegno set `data_emissione`=NULL,
+			`beneficiario`=NULL,`importo`=NULL,`data_incasso`=NULL,`data_scadenza`=NULL,
+			`annullato`=0,`note`=NULL WHERE id=?)");
+			stmt2->set_unsigned32(0, assegno.getId());
+			auto ret2 = stmt2->execute();
+			
+			if (ret2 == 1)
+			{
+				assegno.annulla();
+			}
+		}*/
+		con->disconnect();
+		return ret;
 	}
+
+	return 0;
+}
+
+int AssegnoDao::azzera(Assegno & assegno)
+{
+	mydb::Connection conn;
+	auto con = conn.connect();
+	mariadb::statement_ref stmt2;
+	stmt2 = con->create_statement(R"(update palmi.assegno set `data_emissione`=NULL,
+			`beneficiario`=NULL,`importo`=NULL,`data_incasso`=NULL,`data_scadenza`=NULL,
+			`annullato`=0,`note`=NULL WHERE id=?)");
+	stmt2->set_unsigned32(0, assegno.getId());
+	auto ret2 = stmt2->execute();
+	con->disconnect();
+	return ret2;
 }
 
 std::string AssegnoDao::createQuery(const Azienda& az)
