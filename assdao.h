@@ -33,6 +33,6 @@ private:
 	std::string createQuery(const ContoCorrente& cc);
 
 	std::vector<Assegno> execQuery(const std::string& query, const unsigned int id = 0);
-	Assegno fromResultset(const mariadb::result_set_ref);
+	void fromResultset(const mariadb::result_set_ref, Assegno& ass);
 	std::string m_sql;
 };
